@@ -1,0 +1,13 @@
+{
+  "name": "bcash-instadump",
+  "version": "0.1.0",
+  "description": "DUMP bcash, HODL bitcoins",
+  "author": "Nadav Ivgi",
+  "license": "MIT",
+  "dependencies": {
+    "bcoin": "^1.0.0-beta.14",
+    "colors": "^1.1.2",
+    "inquirer": "^3.2.1",
+    "minimist": "^1.2.0"
+  }
+}
