@@ -1,13 +1,25 @@
 {
   "name": "bcash-instadump",
-  "version": "0.1.0",
-  "description": "DUMP bcash, HODL bitcoins",
+  "version": "0.2.0",
+  "description": "DUMP bcash, HODL bitcoin",
   "author": "Nadav Ivgi",
-  "license": "MIT",
+  "license": "GPL-3.0",
+  "bin": {
+    "bcash-instadump": "./cli/bcash-instadump.js",
+    "bcash-tx": "./cli/bcash-tx.js",
+    "bcash-utxo": "./cli/bcash-utxo.js",
+    "bcash-broadcast": "./cli/bcash-broadcast.js"
+  },
   "dependencies": {
     "bcoin": "^1.0.0-beta.14",
-    "colors": "^1.1.2",
+    "chalk": "^2.0.1",
+    "commander": "^2.11.0",
+    "iferr": "^0.1.5",
     "inquirer": "^3.2.1",
-    "minimist": "^1.2.0"
+    "only": "0.0.2",
+    "socks": "^1.1.10",
+    "superagent": "^3.5.2",
+    "superagent-proxy": "^1.0.2",
+    "uniq": "^1.0.1"
   }
 }
