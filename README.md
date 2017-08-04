@@ -46,6 +46,11 @@ Use [ShapeShift](https://shapeshift.io/) to insta-dump bcash from the unspent ou
 (`amount` in whole bitcoins, `key` in base58/WIF)
 and send the purchased BTC to the bitcoin address provided in `--payout`.
 
+Transactions are signed using a [monkey-patched](https://github.com/shesek/bcash-instadump/blob/master/lib/patch-bcoin-bcash.js)
+version of [bcoin](http://bcoin.io/)
+and broadcasted to the bcash network using an
+[Electrum bcash server](https://github.com/shesek/bcash-instadump/blob/master/electrum-servers.json).
+
 You can specify `--input` multiple times, or specify a CSV file instead with `--inputs utxos.csv`.
 All the inputs will be joined together in a single transaction (see "*Privacy Considerations*" below).
 Only `p2pkh` scripts are currently supported.
