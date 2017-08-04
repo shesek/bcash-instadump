@@ -21,7 +21,7 @@ const
   if (!args.feerate) args.feerate = (Math.random()*100|0)+150 // 150 to 250
 
   if (expectProxy && !args.proxy && !args.noproxy) {
-    printErr('no proxy was specified. set ' + chalk.yellowBright('--noproxy') + ' if you\'re sure about that.')
+    printErr('no proxy was specified. set ' + chalk.yellowBright('--noproxy') + ' if you\'re sure about that, or enable one with --proxy/--tor.')
     process.exit()
   }
 }
