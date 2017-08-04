@@ -1,6 +1,6 @@
 # bcash-instadump
 
-**DUMP bcash 💩, HODL bitcoin 🚀**
+**DUMP bcash 💩, HODL bitcoin 🚀🌔**
 
 CLI tools for insta-dumping bcash in exchange for bitcoins (`bcash-instadump`),
 creating bcash-compatible transactions (`bcash-tx`),
