@@ -199,7 +199,7 @@ and to any attackers gaining access to Changelly's servers (via hacking, a legal
 
 *Note:* Changelly appears to be blocking Tor users.
 
-**Leaking data to the Electrum bcash servers *when broadcasting transactions* **
+**Leaking data to the Electrum bcash servers *when broadcasting transactions***
 
 Transactions are broadcast to the bcash network using the Electrum bcash servers,
 giving them the ability to link your transactions/addresses/outputs to each-other and to your IP address.
@@ -211,7 +211,7 @@ Preferably, use a proxy with a different public IP address for each request
 Alternatively, you can get the raw transaction and broadcast it manually.
 Ideally, over a bcash full node under your full control, connected over Tor.
 
-**Leaking data to the Electrum bcash servers *when listing unspent outputs* **
+**Leaking data to the Electrum bcash servers *when listing unspent outputs***
 
 `bcash-utxo` uses Electrum servers to fetch the list of utxos,
 giving them the ability to link your addresses to each-other and to your IP address.

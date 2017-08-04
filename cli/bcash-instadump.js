@@ -107,8 +107,8 @@ const confirm = message => args.whateverjustdump
       .then(r => r.ok || Promise.reject('user aborted'))
 
 const verifyLimits = (limits, amount) =>
-  (limits.min && toSat(value) < toSat(limits.min)) ? Promise.reject('cannot sell '+amount+' BCH, minimum is '+limits.min+' BCH')
-: (limits.max && toSat(value) > toSat(limits.max)) ? Promise.reject('cannot sell '+amount+' BCH, maximum is '+limits.max+' BCH')
+  (limits.min && toSat(amount) < toSat(limits.min)) ? Promise.reject('cannot sell '+amount+' BCH, minimum is '+limits.min+' BCH')
+: (limits.max && toSat(amount) > toSat(limits.max)) ? Promise.reject('cannot sell '+amount+' BCH, maximum is '+limits.max+' BCH')
 : Promise.resolve(limits)
 
 const accountExistsMsg = 'an account already exists with this email address. if its yours, please authenticate with '+chalk.yellowBright('--password') + ', ' + chalk.yellowBright('--cookie') + ' or ' + chalk.yellowBright('--session') + '.'
