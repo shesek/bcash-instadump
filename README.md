@@ -143,6 +143,7 @@ See `bcash-broadcast --help` for a full list of options.
 ### Recommend Usage (protect your BTC!)
 
 1. Prepare a CSV file with a list of your UTXOs (`txid,vout,amount,key` format. `amount` in whole bitcoins, `key` in base58/WIF).
+   See instructions for specific wallets below.
 
 2. **Move your bitcoins!** To avoid risking your BTC, keys with a BTC balance should never be exposed to this tool.
    Make sure the keys provided to this software are *entirely emptied of BTC* and hold just the BCH tokens before doing anything with this tool.
@@ -151,74 +152,75 @@ See `bcash-broadcast --help` for a full list of options.
 
     (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy Concerns*" below)
 
-**Example with Bitcoin Core:**
+### Extracting your UTXOs
+
+**From Bitcoin Core:**
 
 ```bash
-$ sudo apt-get install jq
-
-# 1. Generate the unspent outputs CSV file
 $ bitcoin-cli listunspent | jq -c '.[] | [.txid,.vout,.amount,.address]' | tr -d '[]"' \
    | awk -F, '{"bitcoin-cli dumpprivkey "$4 | getline key; print $1 FS $2 FS $3 FS key }' \
    > utxos.csv
 
-# 2. MOVE THE BITCOINS TO NEW, UNUSED ADDRESSES
-$ bitcoin-cli sendtoaddress ...
+```
 
-# 3. Profit!
-$ bcash-instadump --inputs utxos.csv --payout `bitcoin-cli getnewaddress` --email zx@gmail.com
+**From Electrum:**
 
-# (WARNING: will merge the all the outputs together in a single transaction, see "Privacy Concerns" below)
+```bash
+$ electrum listunspent | jq -c '.[] | [.prevout_hash,.prevout_n,.value,.address]' | tr -d '[]"' \
+   | awk -F, '{"electrum getprivatekeys "$4"|jq -r .[0]" | getline key; print $1 FS $2 FS $3 FS key }' \
+   > utxos.csv
 
+# @TODO assumes p2pkh outputs, will break with multisig
 ```
 
 ### Privacy Concerns
 
-- **Leaking data to the public blockchain**
+**Leaking data to the public blockchain**
 
-  Merging your unspent outputs together (in a single multi-input transaction)
-  will reveal the link between them (and their associated addresses)
-  on the public bitcoin/bcash blockchains, *to the entire world*.
+Merging your unspent outputs together (in a single multi-input transaction)
+will reveal the link between them (and their associated addresses)
+on the public bitcoin/bcash blockchains, *to the entire world*.
 
-  It is recommended to invoke `bcash-instadump` multiple times,
-  once for each unspent output being sold (creating a separate 1-in,1-out tx each time)
-  and with a different `--payout` address. Ideally, this should also be spread out over time.
-  This could be accomplished using a bash script along the lines of:
+It is recommended to invoke `bcash-instadump` multiple times,
+once for each unspent output being sold (creating a separate 1-in,1-out tx each time)
+and with a different `--payout` address. Ideally, this should also be spread out over time.
+This could be accomplished using a bash script along the lines of:
 
-      $ cat utxos.csv | xargs -L 1 bash -c 'sleep $[ ( $RANDOM % 3600 ) ]s &&
-          bcash-instadump --input $1 --payout `bitcoin-cli getnewaddress` \
-                          --email zx@gmail.com --cookie zx.cookie \
-                          --whateverjustdump'
+    $ cat utxos.csv | xargs -L 1 bash -c 'sleep $[ ( $RANDOM % 3600 ) ]s &&
+        bcash-instadump --input $1 --payout `bitcoin-cli getnewaddress` \
+                        --email zx@gmail.com --cookie zx.cookie \
+                        --whateverjustdump'
 
-- **Leaking data to Changelly**
+**Leaking data to Changelly**
 
-  Selling all of your unspent outputs via the same Changelly account and/or from the same IP address
-  will reveal the link between your outputs (and their associated addresses) to the Changelly operators
-  and to any attackers gaining access to Changelly's servers (via hacking, a legal warrant, or otherwise).
-  
-  *Note:* Changelly appears to be blocking Tor users.
+Selling all of your unspent outputs via the same Changelly account and/or from the same IP address
+will reveal the link between your outputs (and their associated addresses) to the Changelly operators
+and to any attackers gaining access to Changelly's servers (via hacking, a legal warrant, or otherwise).
 
-- **Leaking data to the Electrum bcash servers *when broadcasting transactions***
+*Note:* Changelly appears to be blocking Tor users.
 
-  Transactions are broadcast to the bcash network using the Electrum bcash servers,
-  giving them the ability to link your transactions/addresses/outputs to each-other and to your IP address.
+**Leaking data to the Electrum bcash servers *when broadcasting transactions* **
 
-  It is recommended that you use `--proxy` or `--tor` to connect over a proxy.
-  Preferably, use a proxy with a different public IP address for each request
-  (otherwise the transactions would not be linked to your real IP address, but still linked to each-other).
+Transactions are broadcast to the bcash network using the Electrum bcash servers,
+giving them the ability to link your transactions/addresses/outputs to each-other and to your IP address.
 
-  Alternatively, you can get the raw transaction and broadcast it manually.
-  Ideally, over a bcash full node under your full control, connected over Tor.
+It is recommended that you use `--proxy` or `--tor` to connect over a proxy.
+Preferably, use a proxy with a different public IP address for each request
+(otherwise the transactions would not be linked to your real IP address, but still linked to each-other).
 
-- **Leaking data to the Electrum bcash servers *when listing unspent outputs***
+Alternatively, you can get the raw transaction and broadcast it manually.
+Ideally, over a bcash full node under your full control, connected over Tor.
 
-  `bcash-utxo` uses Electrum servers to fetch the list of utxos,
-  giving them the ability to link your addresses to each-other and to your IP address.
+**Leaking data to the Electrum bcash servers *when listing unspent outputs* **
 
-  Using a proxy would help here too (with the same caveat regarding different public IP addresses),
-  but ideally you should get this information from your own full node.
-  
-  Note that `bcash-utxo` is the only tool that fetches unspent outputs,
-  the other tools get them directly and don't attempt to fetch them on their own.
+`bcash-utxo` uses Electrum servers to fetch the list of utxos,
+giving them the ability to link your addresses to each-other and to your IP address.
+
+Using a proxy would help here too (with the same caveat regarding different public IP addresses),
+but ideally you should get this information from your own full node.
+
+Note that `bcash-utxo` is the only tool that fetches unspent outputs,
+the other tools get them directly and don't attempt to fetch them on their own.
 
 ## Contributing
 

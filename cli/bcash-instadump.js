@@ -112,4 +112,4 @@ const verifyLimits = (limits, amount) =>
 : Promise.resolve(limits)
 
 const accountExistsMsg = 'an account already exists with this email address. if its yours, please authenticate with '+chalk.yellowBright('--password') + ', ' + chalk.yellowBright('--cookie') + ' or ' + chalk.yellowBright('--session') + '.'
-    , sessInstruct = (cookie, session) => chalk.yellow('(info)') + ' use ' + chalk.yellowBright(cookie ? shellEsc([ '--cookie', cookie ]) : shellEsc([ '--session', session ])) + ' to return to this user session'
+    , sessInstruct = (cookie, session) => chalk.yellow('(info)') + ' use ' + chalk.yellowBright(cookie ? shellEsc([ '--cookie', cookie ]) : shellEsc([ '--session', session ])) + ' to resume this user session ' + chalk.redBright('(keep this!)')
