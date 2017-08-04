@@ -54,7 +54,7 @@ To receive an email receipt from ShapeShift, specify `--email <address>` (option
 
 You can set your bcash refund address with `--refund <address>`
 (used in case anything goes wrong with the exchange, should not normally come into use).
-Defaults to the prevout address of the first `--input`.
+Defaults to the address associated with the first key provided.
 
 Specify `--feerate` to control the transaction fee (in `satoshis/byte`).
 Defaults to `rand(150,250)`.
