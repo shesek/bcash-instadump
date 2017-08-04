@@ -43,11 +43,11 @@ const args = require('commander')
 if (!(args.input.length && args.payout)) args.help()
 initArgs(args)
 
-// @XXX builds and discards a dummy transaction to estimate the tx amounts and fees. somewhat wasteful.
-// @XXX might be *a bit* off from the actual amount being sent
+// @XXX builds and discards a dummy transaction to estimate the tx amounts/fees and extract the prevout address. somewhat wasteful.
+// @XXX bch_sell might be a bit off from the actual amounts
 const txTmp    = makeTx(args.input, [ DUMMYOUT ], args.feerate)
     , bch_sell = formatSat(txTmp.outputs[0].value)
-    , refund   = args.refund || txTmp.inputs[0].getAddress()
+    , refund   = args.refund || txTmp.view.getCoin(txTmp.inputs[0]).getAddress()
 delete txTmp
 
 const shapeshift = ShapeShift({ proxy: args.proxy, noreferral: args.noreferral })
