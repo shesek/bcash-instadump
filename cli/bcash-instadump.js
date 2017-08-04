@@ -18,7 +18,7 @@ const formatNum  = (num, asStr) => asStr ? (+num).toFixed(8) : +(+num).toFixed(8
 
 const args = require('commander')
   .version(require('../package.json').version)
-  .description(`${C.red('DUMP bcash')} 💩  ${C.green('HODL bitcoins')} 🚀:🌔`)
+  .description(`${C.red('DUMP bcash')} 💩  ${C.green('HODL bitcoin')} 🚀:🌔`)
 
   .option('-i, --input <input>', 'add input in txid:vout:amount:key format (amount in whole bitcoins, key in base58)', collector(parseInput), [])
   .option('-I, --inputs <file>', 'read inputs from CSV file')
@@ -81,7 +81,7 @@ const makeVerifyTx = order => {
 
   console.log('\nShapeShift order', C.yellowBright(order.orderId)+':\n')
   console.log('  '+C.red.bold('DUMP'), C.red(formatNum(bch_sell, true), 'BCH')+',', C.green.bold('GET'), C.green(formatNum(btc_buy, true), 'BTC'))
-  console.log('\n  Sending', C.yellowBright(formatNum(bch_sell, true), 'BCH'), 'to', C.yellowBright(order.deposit), C.yellow('(ShpaeShift\'s bcash address)'))
+  console.log('\n  Sending', C.yellowBright(formatNum(bch_sell, true), 'BCH'), 'to', C.yellowBright(order.deposit), C.yellow('(shpaeshift\'s bcash address)'))
   console.log('  Getting', C.yellowBright(formatNum(order.withdrawalAmount, true), 'BTC'), 'to', C.yellowBright(order.withdrawal), C.yellow('(your bitcoin payout address)'))
   console.log('  Refund address (bcash):', C.yellowBright(order.returnAddress), (!args.refund ? '(none provided, defaulted to the address of the first key)' : ''))
   console.log('  Deducted miner fee:', C.yellowBright(order.minerFee, 'BTC'))

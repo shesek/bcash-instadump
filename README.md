@@ -34,7 +34,7 @@ The safer way: find a Git commit reference published by a third-party security a
 
     $ npm install -g git://github.com/shesek/bcash-instadump#[GIT-COMMIT-SHA256-HERE]
 
-This module requires node.js 7.6.0 or newer.
+Requires nodejs 7.6.0 or newer.
 
 ## CLI tools
 
@@ -47,7 +47,7 @@ Use [ShapeShift](https://shapeshift.io/) to insta-dump bcash from the unspent ou
 and send the purchased BTC to the bitcoin address provided in `--payout`.
 
 You can specify `--input` multiple times, or specify a CSV file instead with `--inputs utxos.csv`.
-All the inputs will be joined together in a single transaction (see "*Privacy Concerns*" below).
+All the inputs will be joined together in a single transaction (see "*Privacy Considerations*" below).
 Only `p2pkh` scripts are currently supported.
 
 To receive an email receipt from ShapeShift, specify `--email <address>` (optional).
@@ -91,7 +91,7 @@ Use `--broadcast` to broadcast the transaction via an Electrum bcash server
 (also see `bcash-broadcast` if you already have a raw transaction ready).
 
 Use `--proxy [socks4a|socks5h]://user:pass@host:port` or `--tor` to connect to the Electrum server over a proxy,
-or `--noproxy` to connect without one (see "*Privacy Concerns*" below).
+or `--noproxy` to connect without one (see "*Privacy Considerations*" below).
 
 You can configure a custom Electrum bcash server using `--electrum [tls|tcp]://host:port`.
 If not provided, one is chosen at random (from `electrum-servers.json`).
@@ -107,7 +107,7 @@ See `bcash-tx --help` for a full list of options.
 Get the unspent bcash outputs for the provided address(es) from the Electrum bcash servers,
 and print them as CSV (`txid,vout,amount,address` format).
 
-This will leak information to the Electrum bcash servers (see "*Privacy Concerns*" below).
+This will leak information to the Electrum bcash servers (see "*Privacy Considerations*" below).
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx`.
 
@@ -139,7 +139,7 @@ See `bcash-broadcast --help` for a full list of options.
 
 3. Profit! `$ bcash-instadump --inputs utxos.csv --payout 1BtcAddrGimmeRogersCoins`
 
-    (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy Concerns*" below)
+    (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy Considerations*" below)
 
 ### Extracting your UTXOs
 
@@ -162,7 +162,7 @@ $ electrum listunspent | jq -c '.[] | [.prevout_hash,.prevout_n,.value,.address]
 # @TODO assumes p2pkh outputs, will break with multisig
 ```
 
-### Privacy Concerns
+### Privacy Considerations
 
 **Leaking data to the public blockchain**
 
