@@ -34,6 +34,8 @@ The safer way: find a Git commit reference published by a third-party security a
 
     $ npm install -g git://github.com/shesek/bcash-instadump#[GIT-COMMIT-SHA256-HERE]
 
+This module requires node.js 7.6.0 or newer.
+
 ## CLI tools
 
 ### `bcash-instadump` - dump bcash on Changelly
@@ -60,8 +62,8 @@ You can specify `--input` multiple times, or specify a CSV file instead with `--
 All the inputs will be joined together in a single transaction (see "*Privacy Concerns*" below).
 Only `p2pkh` scripts are currently supported.
 
-Use `--cookie <file>` to persist the Changelly session cookie to `file` (**recommended**),
-or `--session <sessid>` to provide the session id directly (it'll be printed on-screen, don't lose it).
+Use `--cookie <file>` to persist the Changelly session cookie to `file` (*recommended*),
+or `--session <sessid>` to provide the session id manually (it'll be printed on-screen, don't lose it).
 If a valid session cookie already exists, `--email` and `--password` are moot.
 
 Use `--whateverjustdump` to skip all confirmations (for exchange rates, miner fees, etc) and just dump.

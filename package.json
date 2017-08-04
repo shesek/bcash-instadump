@@ -22,5 +22,8 @@
     "superagent": "^3.5.2",
     "superagent-proxy": "^1.0.2",
     "uniq": "^1.0.1"
+  },
+  "engines": {
+    "node" : ">=7.6.0"
   }
 }
