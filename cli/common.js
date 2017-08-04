@@ -1,6 +1,6 @@
 const Amount = require('bcoin/lib/btc/amount')
     , { readFileSync } = require('fs')
-    , chalk = require('chalk')
+    , C = require('chalk')
 
 const MAXFEERATE = 2000
 
@@ -21,19 +21,20 @@ const
   if (!args.feerate) args.feerate = (Math.random()*100|0)+150 // 150 to 250
 
   if (expectProxy && !args.proxy && !args.noproxy) {
-    printErr('no proxy was specified. set ' + chalk.yellowBright('--noproxy') + ' if you\'re sure about that, or enable one with --proxy/--tor.')
+    printErr('no proxy was specified. set ' + C.yellowBright('--noproxy') + ' if you\'re sure about that, '
+           + 'or enable one with ' + C.yellowBright('--proxy') + '/' + C.yellowBright('--tor') + '.')
     process.exit()
   }
 }
 
 , checkFee = tx => {
     if (tx.getRate(tx.view)/1000 > MAXFEERATE) {
-      printErr('woah there! are you sure you want to pay '+Amount.btc(tx.getFee())+' BCH in fees? enable ' + chalk.yellowBright('--crazyfee') + ' if you are.')
+      printErr('woah there! are you sure you want to pay '+Amount.btc(tx.getFee())+' BCH in fees? enable ' + C.yellowBright('--crazyfee') + ' if you are.')
       process.exit()
     }
   }
 
 , printErr = err =>
-    console.error(chalk.red('(error)'), err.message || err || '', err.response && (err.response.body && err.response.body.errors || err.response.text) || '')
+    console.error(C.red('(error)'), err.message || err || '', err.response && (err.response.body && err.response.body.errors || err.response.text) || '')
 
 module.exports = { formatSat, toSat, parseInput, parseOutput, collector, initArgs, checkFee, printErr }
