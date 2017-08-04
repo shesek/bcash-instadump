@@ -9,7 +9,7 @@ const
 , makeTx    = require('../lib/make-tx')
 , Changelly = require('../lib/changelly')
 
-, { collector, parseInput, formatSat, initArgs, checkFee, printErr } = require('./common')
+, { collector, parseInput, toSat, formatSat, initArgs, checkFee, printErr } = require('./common')
 , { inspect } = require('util')
 
 const DUMMYOUT = { address: '1BitcoinEaterAddressDontSendf59kuE', value: 'ALL' }
@@ -48,14 +48,17 @@ if (!(args.input.length && args.payout && (args.email || args.cookie || args.ses
 initArgs(args)
 
 // @XXX builds and discards a dummy transaction to estimate the tx amounts and fees. somewhat wasteful.
-const bch_sent = formatSat(makeTx(args.input, [ DUMMYOUT ], args.feerate).outputs[0].value)
+const bch_sell = formatSat(makeTx(args.input, [ DUMMYOUT ], args.feerate).outputs[0].value)
 
-const client   = Changelly(only(args, 'email password cookie session proxy noreferral'))
+const client = Changelly(only(args, 'email password cookie session proxy noreferral'))
 
 client.auth
   .then(u       => console.log(chalk.yellow('(info)'), 'logged-in to changelly as', chalk.yellowBright(u.email), '\n' + sessInstruct(args.cookie, u.session)))
-  .then(_       => client.estimate(bch_sent))
-  .then(btc_out => client.trade(bch_sent, btc_out, args.payout))
+  .then(_       => client.limits())
+  .then(limits  => verifyLimits(limits, bch_sell))
+  .then(limits  => console.log(chalk.yellow('(info)'), 'within limits', chalk.greenBright(limits.min||0, '<=', bch_sell, '<=', limits.max||Infinity)))
+  .then(_       => client.estimate(bch_sell))
+  .then(btc_buy => client.trade(bch_sell, btc_buy, args.payout))
   .then(trade   => makeVerifyTx(trade))
   .then(tx      => console.log(tx.inspect(),'\n\n\n',tx.toRaw().toString('hex')))
   .catch(err    => Promise.reject(err == 'account-exists' ? accountExistsMsg : err))
@@ -63,13 +66,13 @@ client.auth
 
 const makeVerifyTx = trade => {
   const tx      = makeTx(args.input, [ { address: trade.payinAddress, value: 'ALL' } ], args.feerate)
-      , btc_out = trade.amountExpectedTo
+      , btc_buy = trade.amountExpectedTo
 
   if (!args.crazyfee) checkFee(tx)
 
   console.log('\nOrder', chalk.yellowBright(trade.transId), 'via Changelly account', chalk.yellowBright(client.auth._user.email)+':')
-  console.log('  Sending', chalk.yellowBright(formatNum(bch_sent, true), 'BCH'), 'to', chalk.yellowBright(trade.payinAddress), '(changelly\'s bcash address)')
-  console.log('  Getting', chalk.yellowBright(formatNum(btc_out, true), 'BTC'), 'to', chalk.yellowBright(trade.payoutAddress), '(your bitcoin address)')
+  console.log('  Sending', chalk.yellowBright(formatNum(bch_sell, true), 'BCH'), 'to', chalk.yellowBright(trade.payinAddress), '(changelly\'s bcash address)')
+  console.log('  Getting', chalk.yellowBright(formatNum(btc_buy, true), 'BTC'), 'to', chalk.yellowBright(trade.payoutAddress), '(your bitcoin address)')
   console.log('  Exchange fee:', chalk.yellowBright(trade.fee + '%'))
   console.log('\nTransaction', chalk.yellowBright(tx.txid())+':')
   console.log('  In:', chalk.yellowBright(formatSat(tx.getInputValue()), 'BCH'), 'from', chalk.yellowBright(tx.inputs.length), 'inputs')
@@ -78,8 +81,8 @@ const makeVerifyTx = trade => {
   if (tx.inputs.length > 1) console.log(' ', chalk.red('(warn)'), chalk.gray('merging multiple inputs together could harm your privacy. See README.md for more details.'))
   //console.log('\n  raw tx:', chalk.gray(tx.toRaw().toString('hex')))
   console.log('\nRates:')
-  console.log(' ', chalk.red.bold('DUMP'), chalk.red(formatNum(bch_sent, true), 'BCH')+',', chalk.green.bold('GET'), chalk.green(formatNum(btc_out, true), 'BTC'))
-  console.log(' ', '1 BTC', '=', chalk.yellowBright(formatNum(bch_sent/btc_out), 'BCH')+',', '1 BCH', '=', chalk.yellowBright(formatNum(btc_out/bch_sent), 'BTC'))
+  console.log(' ', chalk.red.bold('DUMP'), chalk.red(formatNum(bch_sell, true), 'BCH')+',', chalk.green.bold('GET'), chalk.green(formatNum(btc_buy, true), 'BTC'))
+  console.log(' ', '1 BTC', '=', chalk.yellowBright(formatNum(bch_sell/btc_buy), 'BCH')+',', '1 BCH', '=', chalk.yellowBright(formatNum(btc_buy/bch_sell), 'BTC'))
   console.log('\n ', chalk.red('(warn)'), 'Changelly does not commit to fixed rates, these are only their estimates.')
   console.log('         The actual rate is determined when the exchange is fulfilled, after several on-chain confirmations.')
   console.log('         See:', chalk.underline('https://changelly.com/faq#why-not-fix-rates'))
@@ -102,6 +105,11 @@ const confirm = message => args.whateverjustdump
   ? (console.log(chalk.green('?'), chalk.bold(message), chalk.gray('--whateverjustdump, skipping')), Promise.resolve(true))
   : inquirer.prompt([ { name: 'ok', type: 'confirm', message, default: false } ])
       .then(r => r.ok || Promise.reject('user aborted'))
+
+const verifyLimits = (limits, amount) =>
+  (limits.min && toSat(value) < toSat(limits.min)) ? Promise.reject('cannot sell '+amount+' BCH, minimum is '+limits.min+' BCH')
+: (limits.max && toSat(value) > toSat(limits.max)) ? Promise.reject('cannot sell '+amount+' BCH, maximum is '+limits.max+' BCH')
+: Promise.resolve(limits)
 
 const accountExistsMsg = 'an account already exists with this email address. if its yours, please authenticate with '+chalk.yellowBright('--password') + ', ' + chalk.yellowBright('--cookie') + ' or ' + chalk.yellowBright('--session') + '.'
     , sessInstruct = (cookie, session) => chalk.yellow('(info)') + ' use ' + chalk.yellowBright(cookie ? shellEsc([ '--cookie', cookie ]) : shellEsc([ '--session', session ])) + ' to return to this user session'
