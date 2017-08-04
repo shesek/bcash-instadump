@@ -25,7 +25,6 @@ const args = require('commander')
   .option('-I, --inputs <file>', 'read inputs from CSV file')
   .option('-P, --payout <address>', 'bitcoin address for receiving the converted bitcoins (required)')
   .option('-r, --refund <address>', 'bcash address for refunds if anything goes wrong with the exchange [default: the address of the first key]')
-  .option('-E, --email <email>', 'email address for receipt (optional)')
   .option('-f, --feerate <rate>', 'set the feerate in satoshis/byte [default: rand(150,250)]', x => parseInt(x))
 
   .option('-e, --electrum <server>', 'electrum server, must be bcash-compatible [default: random server]')
@@ -37,7 +36,7 @@ const args = require('commander')
   .option('--noreferral', 'don\'t use referrer code to tip the author of this software')
   .option('--whateverjustdump', 'skip all confirmations (for exchange rates, miner fees, etc) and just dump. this is probably a terrible idea.')
 
-  .on('--help', _ => console.log('\n  Example:\n\n    $ bcash-instadump --input txid,vout,amount,key --payout 1BtcAddrGimmeRogersCoins --email zx@gmail.com'
+  .on('--help', _ => console.log('\n  Example:\n\n    $ bcash-instadump --input txid,vout,amount,key --payout 1BtcAddrGimmeRogersCoins'
                                + '\n\n  README:', C.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
 
   .parse(process.argv)

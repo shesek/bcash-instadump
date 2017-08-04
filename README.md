@@ -50,8 +50,6 @@ You can specify `--input` multiple times, or specify a CSV file instead with `--
 All the inputs will be joined together in a single transaction (see "*Privacy Considerations*" below).
 Only `p2pkh` scripts are currently supported.
 
-To receive an email receipt from ShapeShift, specify `--email <address>` (optional).
-
 You can set your bcash refund address with `--refund <address>`
 (used in case anything goes wrong with the exchange, should not normally come into use).
 Defaults to the address associated with the first key provided.
