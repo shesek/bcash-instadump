@@ -38,50 +38,39 @@ This module requires node.js 7.6.0 or newer.
 
 ## CLI tools
 
-### `bcash-instadump` - dump bcash on Changelly
+### `bcash-instadump` - dump bcash on ShapeShift
 
-    $ bcash-instadump --input txid,vout,amount,key --payout 1BtcAddrGimmeRogersCoins --email zx@gmail.com
+    $ bcash-instadump --tor --input txid,vout,amount,key --payout 1BtcAddrGimmeRogersCoins
 
-Use [Changelly](https://changelly.com/) to insta-dump bcash from the unspent output specified in `--input`
+Use [ShapeShift](https://shapeshift.io/) to insta-dump bcash from the unspent output specified in `--input`
 (`amount` in whole bitcoins, `key` in base58/WIF)
-and send the converted BTC to the bitcoin address provided in `--payout`.
-
-If you already have an account on Changelly, specify the account's password with `--password`.
-Otherwise, a new account will be created with the provided `--email`.
-
-(*Changelly sends a randomly generated password to your email,
-but also provides a session cookie (see `--cookie` and `--session`)
-that gives immediate full access to the account.
-While the password is not required for dumping your bcash,
-you should still have it in case you lose the cookie, or if the session expires.*)
-
-Specify `--feerate` to control the transaction fee (in `satoshis/byte`).
-Defaults to `rand(150,250)`.
+and send the purchased BTC to the bitcoin address provided in `--payout`.
 
 You can specify `--input` multiple times, or specify a CSV file instead with `--inputs utxos.csv`.
 All the inputs will be joined together in a single transaction (see "*Privacy Concerns*" below).
 Only `p2pkh` scripts are currently supported.
 
-Use `--cookie <file>` to persist the Changelly session cookie to `file` (*recommended*),
-or `--session <sessid>` to provide the session id manually (it'll be printed on-screen, don't lose it).
-If a valid session cookie already exists, `--email` and `--password` are moot.
+To receive an email receipt from ShapeShift, specify `--email <address>` (optional).
+
+You can set your bcash refund address with `--refund <address>`
+(used in case anything goes wrong with the exchange, should not normally come into use).
+Defaults to the prevout address of the first `--input`.
+
+Specify `--feerate` to control the transaction fee (in `satoshis/byte`).
+Defaults to `rand(150,250)`.
 
 Use `--whateverjustdump` to skip all confirmations (for exchange rates, miner fees, etc) and just dump.
 This is probably a terrible idea.
 
-Changelly is used with a referrer code that tips the author of this tool.
-Use `--noreferral` if you don't feel like doing that.
+ShapeShift is used with a referrer code that tips the author of this tool.
+You can disable this with `--noreferral`.
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx` (below).
 
 See `bcash-instadump --help` for a full list of options.
 
-**Note on rates:** Changelly does not commit to fixed rates and only provides estimates.
-The actual rate is determined when the exchange is fulfilled, after several on-chain confirmations.
-See [their FAQ](https://changelly.com/faq#why-not-fix-rates) for more details.
-
-**The author of this tool is not affiliated with Changelly.**
-Do your research and use them at your own risk.
+**The author of this tool is not affiliated with ShapeShift.**
+Use at your own risk.
 
 ----
 
@@ -148,7 +137,7 @@ See `bcash-broadcast --help` for a full list of options.
 2. **Move your bitcoins!** To avoid risking your BTC, keys with a BTC balance should never be exposed to this tool.
    Make sure the keys provided to this software are *entirely emptied of BTC* and hold just the BCH tokens before doing anything with this tool.
 
-3. Profit! `$ bcash-instadump --inputs utxos.csv --payout 1BtcAddrGimmeRogersCoins --email zx@gmail.com`
+3. Profit! `$ bcash-instadump --inputs utxos.csv --payout 1BtcAddrGimmeRogersCoins`
 
     (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy Concerns*" below)
 
@@ -187,17 +176,17 @@ and with a different `--payout` address. Ideally, this should also be spread out
 This could be accomplished using a bash script along the lines of:
 
     $ cat utxos.csv | xargs -L 1 bash -c 'sleep $[ ( $RANDOM % 3600 ) ]s &&
-        bcash-instadump --input $1 --payout `bitcoin-cli getnewaddress` \
-                        --email zx@gmail.com --cookie zx.cookie \
-                        --whateverjustdump'
+        bcash-instadump --input $1 --payout `bitcoin-cli getnewaddress` --whateverjustdump'
 
-**Leaking data to Changelly**
+**Leaking data to ShapeShift**
 
-Selling all of your unspent outputs via the same Changelly account and/or from the same IP address
-will reveal the link between your outputs (and their associated addresses) to the Changelly operators
-and to any attackers gaining access to Changelly's servers (via hacking, a legal warrant, or otherwise).
+Selling all of your unspent outputs from the same IP address
+will reveal the link between your outputs (and their associated addresses) to ShapeShift
+and to anyone gaining access to their systems (via hacking, a legal warrant, or otherwise).
 
-*Note:* Changelly appears to be blocking Tor users.
+It is recommended that you use `--proxy` or `--tor` to connect over a proxy.
+Preferably, use a proxy with a different public IP address for each request
+(otherwise the transactions would not be linked to your real IP address, but still linked to each-other).
 
 **Leaking data to the Electrum bcash servers *when broadcasting transactions***
 

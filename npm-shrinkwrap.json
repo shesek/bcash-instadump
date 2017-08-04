@@ -951,11 +951,6 @@
         "mimic-fn": "1.1.0"
       }
     },
-    "only": {
-      "version": "0.0.2",
-      "resolved": "https://registry.npmjs.org/only/-/only-0.0.2.tgz",
-      "integrity": "sha1-Kv3oTQPlC5qO3EROMGEKcCle37Q="
-    },
     "optionator": {
       "version": "0.8.2",
       "resolved": "https://registry.npmjs.org/optionator/-/optionator-0.8.2.tgz",
