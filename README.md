@@ -67,7 +67,7 @@ You can disable this with `--noreferral`.
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx` (below).
 
-See `bcash-instadump --help` for a full list of options.
+See `bcash-instadump --help` for the full list of options.
 
 **The author of this tool is not affiliated with ShapeShift.**
 Use at your own risk.
@@ -96,7 +96,7 @@ or `--noproxy` to connect without one (see "*Privacy Considerations*" below).
 You can configure a custom Electrum bcash server using `--electrum [tls|tcp]://host:port`.
 If not provided, one is chosen at random (from `electrum-servers.json`).
 
-See `bcash-tx --help` for a full list of options.
+See `bcash-tx --help` for the full list of options.
 
 ----
 
@@ -111,7 +111,7 @@ This will leak information to the Electrum bcash servers (see "*Privacy Consider
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx`.
 
-See `bcash-utxo --help` for a full list of options.
+See `bcash-utxo --help` for the full list of options.
 
 ----
 
@@ -123,7 +123,7 @@ Broadcasts the provided `rawtx` (in hex) to the bcash network via an Electrum bc
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx`.
 
-See `bcash-broadcast --help` for a full list of options.
+See `bcash-broadcast --help` for the full list of options.
 
 ----
 

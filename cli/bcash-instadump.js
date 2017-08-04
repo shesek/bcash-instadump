@@ -11,7 +11,8 @@ const
 
 , { collector, parseInput, toSat, formatSat, initArgs, checkFee, printErr } = require('./common')
 
-const DUMMYOUT = { address: '1BitcoinEaterAddressDontSendf59kuE', value: 'ALL' }
+const dummyOut = { address: '1BitcoinEaterAddressDontSendf59kuE', value: 'ALL' }
+    , pair     = 'BCH_BTC'
 
 const formatNum  = (num, asStr) => asStr ? (+num).toFixed(8) : +(+num).toFixed(8)
     , formatDate = ts => new Date(ts).toLocaleString()
@@ -44,27 +45,24 @@ const args = require('commander')
 if (!(args.input.length && args.payout)) args.help()
 initArgs(args)
 
-// @XXX builds and discards a dummy transaction to estimate the tx amounts/fees and extract the prevout address. somewhat wasteful.
-// @XXX bch_sell might be a bit off from the actual amounts
-const txTmp    = makeTx(args.input, [ DUMMYOUT ], args.feerate)
-    , bch_sell = formatSat(txTmp.outputs[0].value)
-    , refund   = args.refund || txTmp.view.getCoin(txTmp.inputs[0]).getAddress().toString()
-delete txTmp
-
 const shapeshift = ShapeShift({ proxy: args.proxy, noreferral: args.noreferral })
+    , txTmp      = makeTx(args.input, [ dummyOut ], args.feerate) // @XXX builds and discards a dummy tx to estimate size/fee/amounts, somewhat wasteful
+    , bch_sell   = formatSat(txTmp.outputs[0].value) // @XXX might be a bit off from the actual final amount, due to different size/fee
+    , refund     = args.refund || txTmp.view.getCoin(txTmp.inputs[0]).getAddress().toString() // @XXX could be extracted directly from args, but we already have a tx here
 
 console.log(C.yellow('(info)'), `fetching BCH_BTC market info`)
 
-shapeshift.marketinfo()
+shapeshift.marketinfo(pair)
   .then(market => verifyLimits(market, bch_sell))
   .then(market => console.log(C.yellow('(info)'), 'within limits', C.yellowBright(market.minimum||0, '<=', bch_sell, '<=', market.limit||Infinity)))
 
   .then(_      => console.log(C.yellow('(info)'), 'creating order for', C.yellowBright(bch_sell, 'BCH')))
-  .then(_      => shapeshift.shift(bch_sell, refund, args.payout))
+  .then(_      => shapeshift.shift(pair, bch_sell, refund, args.payout))
   .then(order  => makeVerifyTx(order)
     .then(tx   => Electrum(args.electrum, args.proxy).broadcast(tx.toRaw().toString('hex')))
     .then(txid => console.log(C.green('(success)'), 'bcash dumped in tx', C.yellowBright(txid),'\nHODL your shiny new '+order.withdrawalAmount+' bitcoins!'))
   )
+
   .catch(printErr)
 
 const makeVerifyTx = order => {
