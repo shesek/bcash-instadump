@@ -77,7 +77,7 @@ const makeVerifyTx = order => {
   console.log('\nTransaction', C.yellowBright(tx.txid())+':\n')
   console.log('  In:', C.yellowBright(formatSat(tx.getInputValue()), 'BCH'), 'from', C.yellowBright(tx.inputs.length), 'inputs')
   console.log('  Out:', C.yellowBright(formatSat(tx.getOutputValue()), 'BCH'), 'to', C.yellowBright(tx.outputs.length), 'outputs')
-  console.log('  Miner fee:', C.yellowBright(formatSat(tx.getFee()), 'BCH')+',', 'rate:', C.yellowBright(tx.getRate(tx.view)/1000), 'satoshis/byte')
+  console.log('  Miner fee:', C.yellowBright(formatSat(tx.getFee()), 'BCH')+',', 'rate:', C.yellowBright(tx.getRate(tx.view)/1000|0), 'satoshis/byte')
   if (tx.inputs.length > 1) console.log(' ', C.red('(warn)'), C.gray('merging multiple inputs together could harm your privacy. See README.md for more details.'))
 
   console.log('\nShapeShift order', C.yellowBright(order.orderId)+':\n')
