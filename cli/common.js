@@ -2,7 +2,7 @@ const Amount = require('bcoin/lib/btc/amount')
     , { readFileSync } = require('fs')
     , chalk = require('chalk')
 
-const MAXFEERATE = 1000
+const MAXFEERATE = 2000
 
 const
   formatSat = sat  => Amount.serialize(sat, 8)

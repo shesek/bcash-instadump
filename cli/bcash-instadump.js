@@ -35,7 +35,7 @@ const args = require('commander')
   .option('-t, --tor', 'shortcut for --proxy socks5://127.0.0.1:9050')
   .option('-N, --noproxy', 'set if you\'re sure you don\'t want to use a proxy')
 
-  .option('--crazyfee', 'disable the crazy fee sanity check (allow feerate>1000)')
+  .option('--crazyfee', 'disable the crazy fee sanity check (allow feerate>2000)')
   .option('--noreferral', 'don\'t use referrer code to tip the authors of this software')
   .option('--whateverjustdump', 'skip all confirmations (for exchange rates, miner fees, etc) and just dump. this is probably a terrible idea.')
 
