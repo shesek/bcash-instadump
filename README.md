@@ -61,7 +61,7 @@ Use `--whateverjustdump` to skip all confirmations (for exchange rates, miner fe
 This is probably a terrible idea.
 
 ShapeShift is used with a referrer code that tips the author of this tool.
-You can disable this with `--noreferral`.
+This can be disabled with `--noreferral`.
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx` (below).
 

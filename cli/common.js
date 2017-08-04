@@ -37,4 +37,6 @@ const
 , printErr = err =>
     console.error(C.red('(error)'), err.message || err || '', err.response && (err.response.body && err.response.body.errors || err.response.text) || '')
 
-module.exports = { formatSat, toSat, parseInput, parseOutput, collector, initArgs, checkFee, printErr }
+, info = (...text) => console.error(C.yellow('(info)'), ...text)
+
+module.exports = { formatSat, toSat, parseInput, parseOutput, collector, initArgs, checkFee, printErr, info }

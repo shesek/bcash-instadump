@@ -4,7 +4,7 @@ const
   Electrum = require('../lib/electrum')
 , C        = require('chalk')
 
-, { formatSat, initArgs, printErr } = require('./common')
+, { formatSat, initArgs, printErr, info } = require('./common')
 
 const args = require('commander')
   .version(require('../package.json').version)
@@ -27,7 +27,7 @@ initArgs(args)
 args.args.forEach(address =>
   Electrum(args.electrum, args.proxy).listunspent(address)
     .then(outs => {
-      console.error(C.yellow('(info)'), 'loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(address))
+      info('loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(address))
       console.log(outs.map(out =>
         [ out.tx_hash, out.tx_pos, formatSat(out.value), address ].join(',')).join('\n'))
     })
