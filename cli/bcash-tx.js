@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const
-  chalk    = require('chalk')
+  C        = require('chalk')
 , util     = require('util')
 , makeTx   = require('../lib/make-tx')
 , Electrum = require('../lib/electrum')
@@ -30,7 +30,7 @@ const args = require('commander')
   .on('--help', _ => console.log('\n  Examples:\n'
                                + '\n    $ bcash-tx --input txid:vout:amount:key --output 1BcashAddr:ALL --feerate 250 --inspect'
                                + '\n    $ bcash-tx --input txid:vout:amount:key --output 1BcashAddr:10.337 --broadcast --tor'
-                               + '\n\n  README:', chalk.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
+                               + '\n\n  README:', C.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
 
   .parse(process.argv)
 
@@ -47,6 +47,6 @@ else console.log(tx.toRaw().toString('hex'))
 if (args.broadcast) {
   Electrum(args.electrum, args.proxy)
     .broadcast(tx.toRaw().toString('hex'))
-    .then(txid => console.log(chalk.green('(success)'), 'transaction broadcast to the bcash network:', chalk.yellowBright(txid)))
+    .then(txid => console.log(C.green('(success)'), 'transaction broadcast to the bcash network:', C.yellowBright(txid)))
     .catch(printErr)
 }

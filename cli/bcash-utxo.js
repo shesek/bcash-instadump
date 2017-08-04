@@ -2,7 +2,7 @@
 
 const
   Electrum = require('../lib/electrum')
-, chalk    = require('chalk')
+, C        = require('chalk')
 
 , { formatSat, initArgs, printErr } = require('./common')
 
@@ -17,7 +17,7 @@ const args = require('commander')
   .option('-N, --noproxy', 'set if you\'re sure you don\'t want to use a proxy')
 
   .on('--help', _ => console.log('\n  Example:\n\n    $ bcash-utxo --tor 1myFirstAddr 1myOtherAddr ...'
-                               + '\n\n  README:', chalk.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
+                               + '\n\n  README:', C.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
 
   .parse(process.argv)
 
@@ -27,7 +27,7 @@ initArgs(args)
 args.args.forEach(address =>
   Electrum(args.electrum, args.proxy).listunspent(address)
     .then(outs => {
-      console.error(chalk.yellow('(info)'), 'loaded', chalk.yellowBright(outs.length), 'utxos for', chalk.yellowBright(address))
+      console.error(C.yellow('(info)'), 'loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(address))
       console.log(outs.map(out =>
         [ out.tx_hash, out.tx_pos, formatSat(out.value), address ].join(',')).join('\n'))
     })

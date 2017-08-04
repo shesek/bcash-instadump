@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const
-  Electrum = require('../lib/electrum')
-, chalk    = require('chalk')
+  C        = require('chalk')
+, Electrum = require('../lib/electrum')
 , { formatSat, initArgs, printErr } = require('./common')
 
 const args = require('commander')
@@ -15,7 +15,7 @@ const args = require('commander')
   .option('-t, --tor', 'shortcut for --proxy socks5h://127.0.0.1:9150')
   .option('-N, --noproxy', 'set if you\'re sure you don\'t want to use a proxy')
 
-  .on('--help', _ => console.log('\n  README:', chalk.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
+  .on('--help', _ => console.log('\n  README:', C.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
 
   .parse(process.argv)
 
@@ -23,5 +23,5 @@ if (!args.args.length) args.help()
 initArgs(args)
 
 Electrum(args.electrum, args.proxy).broadcast(args.args[0])
-  .then(txid => console.log(chalk.green('(success)'), 'transaction broadcast to the bcash network:', chalk.yellowBright(txid)))
+  .then(txid => console.log(C.green('(success)'), 'transaction broadcast to the bcash network:', C.yellowBright(txid)))
   .catch(printErr)
