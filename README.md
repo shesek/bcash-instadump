@@ -48,10 +48,10 @@ If you already have an account on Changelly, specify the account's password with
 Otherwise, a new account will be created with the provided `--email`.
 
 (*Changelly sends a randomly generated password to your email,
-but also provides a cookie (see `--cookie`) that gives immediate full access to the account.
-While you don't need the email to dump your bcash,
-you'll still need the password in order to troubleshot your account using a web browser,
-if you lose the cookie, or when the cookie is expired.*)
+but also provides a session cookie (see `--cookie` and `--session`)
+that gives immediate full access to the account.
+While the password is not required for dumping your bcash,
+you should still have it in case you lose the cookie, or if the session expires.*)
 
 Specify `--feerate` to control the transaction fee (in `satoshis/byte`).
 Defaults to `rand(150,250)`.
@@ -60,15 +60,15 @@ You can specify `--input` multiple times, or specify a CSV file instead with `--
 All the inputs will be joined together in a single transaction (see "*Privacy Concerns*" below).
 Only `p2pkh` scripts are currently supported.
 
-`--cookie <file>` writes/reads the Changelly authentication cookie to/from `file`.
-*Highly recommended* if you're using this tool to create a new account,
-because otherwise you'll have to get the password from your email for the next `bcash-instadump` invocations.
+Use `--cookie <file>` to persist the Changelly session cookie to `file` (**recommended**),
+or `--session <sessid>` to provide the session id directly (it'll be printed on-screen, don't lose it).
+If a valid session cookie already exists, `--email` and `--password` are moot.
 
 Use `--whateverjustdump` to skip all confirmations (for exchange rates, miner fees, etc) and just dump.
 This is probably a terrible idea.
 
 Changelly is used with a referrer code that tips the author of this tool.
-Use `--nogratuity` if you don't feel like doing that.
+Use `--noreferral` if you don't feel like doing that.
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx` (below).
 

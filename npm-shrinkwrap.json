@@ -1,6 +1,6 @@
 {
   "name": "bcash-instadump",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
@@ -1222,6 +1222,11 @@
       "requires": {
         "inherits": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
       }
+    },
+    "shell-escape": {
+      "version": "0.2.0",
+      "resolved": "https://registry.npmjs.org/shell-escape/-/shell-escape-0.2.0.tgz",
+      "integrity": "sha1-aP0CXrBJC09WegJ/C/IkgLX4QTM="
     },
     "signal-exit": {
       "version": "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.2.tgz",

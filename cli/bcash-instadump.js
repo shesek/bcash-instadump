@@ -4,6 +4,7 @@ const
 , only      = require('only')
 , util      = require('util')
 , inquirer  = require('inquirer')
+, shellEsc  = require('shell-escape')
 
 , makeTx    = require('../lib/make-tx')
 , Changelly = require('../lib/changelly')
@@ -26,7 +27,8 @@ const args = require('commander')
 
   .option('-E, --email <email>', 'email for changelly account (a new account will be created if no <pass> is specified)')
   .option('-W, --password <pass>', 'password for changelly account (optional)')
-  .option('-C, --cookie <file>', 'read/write the changelly auth cookie to/from <file>')
+  .option('-C, --cookie <file>', 'read/write the changelly session cookie to/from <file>')
+  .option('-S, --session <sessid>', 'inject <sessid> to the session cookie')
 
   .option('-e, --electrum <server>', 'electrum server, must be bcash-compatible [default: random server]')
   .option('-p, --proxy <proxy>', 'proxy for connecting to electrum server and changelly')
@@ -34,7 +36,7 @@ const args = require('commander')
   .option('-N, --noproxy', 'set if you\'re sure you don\'t want to use a proxy')
 
   .option('--crazyfee', 'disable the crazy fee sanity check (allow feerate>1000)')
-  .option('--nogratuity', 'don\'t use an affiliate code to tip the authors of this software')
+  .option('--noreferral', 'don\'t use referrer code to tip the authors of this software')
   .option('--whateverjustdump', 'skip all confirmations (for exchange rates, miner fees, etc) and just dump. this is probably a terrible idea.')
 
   .on('--help', _ => console.log('\n  Example:\n\n    $ bcash-instadump --input txid,vout,amount,key --payout 1BtcAddrGimmeRogersCoins --email zx@gmail.com'
@@ -42,16 +44,16 @@ const args = require('commander')
 
   .parse(process.argv)
 
-if (!(args.input.length && args.payout && args.email)) args.help()
+if (!(args.input.length && args.payout && (args.email || args.cookie || args.session))) args.help()
 initArgs(args)
 
 // @XXX builds and discards a dummy transaction to estimate the tx amounts and fees. somewhat wasteful.
 const bch_sent = formatSat(makeTx(args.input, [ DUMMYOUT ], args.feerate).outputs[0].value)
 
-const client = Changelly(only(args, 'email password cookie proxy nogratuity'))
+const client   = Changelly(only(args, 'email password cookie session proxy noreferral'))
 
 client.auth
-  .then(u       => console.error(chalk.yellow('(info)'), 'logged-in to changelly as', chalk.yellowBright(u.email)))
+  .then(u       => console.log(chalk.yellow('(info)'), 'logged-in to changelly as', chalk.yellowBright(u.email), '\n' + sessInstruct(args.cookie, u.session)))
   .then(_       => client.estimate(bch_sent))
   .then(btc_out => client.trade(bch_sent, btc_out, args.payout))
   .then(trade   => makeVerifyTx(trade))
@@ -82,7 +84,7 @@ const makeVerifyTx = trade => {
   console.log('         The actual rate is determined when the exchange is fulfilled, after several on-chain confirmations.')
   console.log('         See:', chalk.underline('https://changelly.com/faq#why-not-fix-rates'))
 
-  console.log('\nPlease ensure that everything checks out. Confirming will dump your bcash - THERE\'S NO UNDO!')
+  console.log('\nPlease ensure that everything checks out. Confirming will dump your bcash - there\'s no undo.')
   console.log('Canceling will print the raw transaction without broadcasting it.')
 
   return confirm('Dump?')
@@ -91,7 +93,7 @@ const makeVerifyTx = trade => {
       console.log('\n'+chalk.red('(canceled)'), 'not sending transaction:\n')
       console.log(util.inspect(tx.inspect(), { depth: 5, colors: true })+'\n')
       console.log(chalk.yellow('(rawtx)'), tx.toRaw().toString('hex')+'\n')
-      console.log(chalk.yellow('(info)'), 'you may send this transaction manually with:\n       $ bcash-broadcast <rawtx>\n')
+      console.log(chalk.yellow('(info)'), 'you may send this transaction manually using:\n       $ bcash-broadcast <rawtx>\n')
       return Promise.reject('user aborted')
     })
 }
@@ -101,4 +103,5 @@ const confirm = message => args.whateverjustdump
   : inquirer.prompt([ { name: 'ok', type: 'confirm', message, default: false } ])
       .then(r => r.ok || Promise.reject('user aborted'))
 
-const accountExistsMsg = 'an account already exists with this email address. if its yours, please authenticate with '+chalk.yellowBright('--password')+' or ' + chalk.yellowBright('--cookie') + '.'
+const accountExistsMsg = 'an account already exists with this email address. if its yours, please authenticate with '+chalk.yellowBright('--password') + ', ' + chalk.yellowBright('--cookie') + ' or ' + chalk.yellowBright('--session') + '.'
+    , sessInstruct = (cookie, session) => chalk.yellow('(info)') + ' use ' + chalk.yellowBright(cookie ? shellEsc([ '--cookie', cookie ]) : shellEsc([ '--session', session ])) + ' to return to this user session'
