@@ -85,7 +85,7 @@ Use at your own risk.
 
 Screenshot of `bcash-instadump` in action:
 
-![Screenshot](https://raw.githubusercontent.com/shesek/bcash-instadump/master/screenshot.png?n)
+![Screenshot](https://raw.githubusercontent.com/shesek/bcash-instadump/master/screenshot.png?z)
 
 ----
 
