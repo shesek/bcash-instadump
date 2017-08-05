@@ -8,7 +8,8 @@ listing unspent bcash outputs (`bcash-utxo`)
 and broadcasting raw bcash transactions (`bcash-broadcast`).
 
 You can use these tools in a way that doesn't risk your bitcoins,
-by moving them out first. See "*Recommend Usage*" below.
+by moving them out first. There are also instructions for signing offline.
+See "*Recommend Usage*" below.
 
 Tips are welcome: *1HNDUy34hrqoTEChCZZjb6vWAU9APAKG78*
 
@@ -167,6 +168,27 @@ $ electrum listunspent | jq -c '.[] | [.prevout_hash,.prevout_n,.value,.address]
    > utxos.csv
 
 # @TODO assumes p2pkh outputs, will break with multisig
+```
+
+### Signing offline
+
+To sign offline, you can use [browserify](http://browserify.org/) to create a portable version
+of `bcash-tx` with all of its dependencies bundled in a single `.js` file,
+and run that from the offline machine (requires nodejs >=7.6.0).
+
+```bash
+# Online machine - prepare portable bundle
+satoshi@hot:~$ npm install -g browserify
+satoshi@hot:~$ git clone https://github.com/shesek/bcash-instadump#[COMMIT-SHA256] && cd bcash-instadump
+satoshi@hot:~$ npm install
+satoshi@hot:~$ browserify --bare cli/bcash-tx.tx > /media/usb/bcash-tx.js
+
+# Offline machine - sign bcash transaction
+satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxo.csv --output 1myBcashAddr:ALL --inspect
+satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxo.csv --output 1myBcashAddr:ALL > /media/usb/signed.tx
+
+# Online machine - broadcast to the bcash network
+satoshi@hot:~$ bcash-broadcast --tor `cat /media/usb/signed.tx`
 ```
 
 ### Privacy Considerations
