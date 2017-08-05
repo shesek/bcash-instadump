@@ -120,7 +120,7 @@ const nearExpiry = order => Date.now() > order.expiration - 60000 // safety marg
 const printSuccess = (order, txid) => {
   console.log('\n'+C.green.bold('(success)'), 'bcash dumped in tx', C.yellowBright(txid)+'\n')
   console.log('  Order status:', C.cyan.underline(order.url))
-  console.log('  Transaction status:', C.cyan.underline(txUrl(txid)))
+  console.log('  Transaction:', C.cyan.underline(txUrl(txid)))
   args.noproxy || console.log('  ' + C.red('(warn)'), C.gray('don\'t forget your proxy when opening links in browser'))
   console.log('\n  '+C.yellowBright(order.withdrawalAmount, 'BTC'), 'are coming your way (after 3 bcash confirmations).', C.bold('HODL strong!'))
   console.log('\nFound this tool useful? Tips are appreciated.\n\n    '+C.yellowBright('1HNDUy34hrqoTEChCZZjb6vWAU9APAKG78')+'\n')
