@@ -29,7 +29,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. USE AT YOUR OWK 
 
 *Requires nodejs 7.6.0 or newer.*
 
-The quick, unsafe way:
+The quick, less safe way:
 
     $ npm install -g bcash-instadump
 
@@ -58,7 +58,7 @@ and broadcasted to the bcash network using an
 [Electrum bcash server](https://github.com/shesek/bcash-instadump/blob/master/electrum-servers.json).
 
 You can specify `--input` multiple times, or specify a CSV file instead with `--inputs utxos.csv`.
-All the inputs will be joined together in a single transaction (see "*Privacy Considerations*" below).
+All the inputs will be joined together in a single transaction (see "*Privacy considerations*" below).
 Only `p2pkh` scripts are currently supported.
 
 You can set your bcash refund address with `--refund <address>`
@@ -85,7 +85,7 @@ Use at your own risk.
 
 Screenshot of `bcash-instadump` in action:
 
-![Screenshot](https://raw.githubusercontent.com/shesek/bcash-instadump/master/screenshot.png?1)
+![Screenshot](https://raw.githubusercontent.com/shesek/bcash-instadump/master/screenshot.png?n)
 
 ----
 
@@ -106,7 +106,7 @@ Use `--broadcast` to broadcast the transaction via an Electrum bcash server
 (also see `bcash-broadcast` if you already have a raw transaction ready).
 
 Use `--proxy [socks4a|socks5h]://user:pass@host:port` or `--tor` to connect to the Electrum server over a proxy,
-or `--noproxy` to connect without one (see "*Privacy Considerations*" below).
+or `--noproxy` to connect without one (see "*Privacy considerations*" below).
 
 You can configure a custom Electrum bcash server using `--electrum [tls|tcp]://host:port`.
 If not provided, one is chosen at random (from `electrum-servers.json`).
@@ -122,7 +122,7 @@ See `bcash-tx --help` for the full list of options.
 Get the unspent bcash outputs for the provided address(es) from the Electrum bcash servers,
 and print them as CSV (`txid,vout,amount,address` format).
 
-This will leak information to the Electrum bcash servers (see "*Privacy Considerations*" below).
+This will leak information to the Electrum bcash servers (see "*Privacy considerations*" below).
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx`.
 
@@ -154,7 +154,7 @@ See `bcash-broadcast --help` for the full list of options.
 
 3. Profit! `$ bcash-instadump --inputs utxos.csv --payout 1BtcAddrGimmeRogersCoins`
 
-    (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy Considerations*" below)
+    (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy considerations*" below)
 
 ### Extracting unspent outputs and keys
 
@@ -198,7 +198,7 @@ satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxo.csv --output 1myBcashA
 satoshi@hot:~$ bcash-broadcast --tor `cat /media/usb/signed.tx`
 ```
 
-### Privacy Considerations
+### Privacy considerations
 
 **Leaking data to the public blockchain**
 
