@@ -57,7 +57,7 @@ shapeshift.marketinfo(pair)
   .then(market => verifyLimits(market, bch_sell))
   .then(market => info('within limits', C.yellowBright(market.minimum, '<=', bch_sell, '<=', market.limit)))
 
-  .then(_      => info('create order for dumping', C.yellowBright(bch_sell, 'BCH')))
+  .then(_      => info('creating order for dumping', C.yellowBright(bch_sell, 'BCH')))
   .then(_      => shapeshift.shift(pair, bch_sell, refund, args.payout))
   .then(order  => makeVerifyTx(order)
     .then(tx   => Electrum(args.electrum, args.proxy).broadcast(tx.toRaw().toString('hex')))
@@ -105,7 +105,7 @@ const makeVerifyTx = order => {
       console.log('\n'+C.red('(canceled)'), 'not sending transaction:\n')
       console.log(util.inspect(tx.inspect(), { depth: 5, colors: true })+'\n')
       console.log(C.yellow('(rawtx)'), tx.toRaw().toString('hex')+'\n')
-      info('you may send this transaction manually using:\n       $ bcash-broadcast <rawtx>\n')
+      info('you can send this transaction manually using:\n       $ bcash-broadcast <rawtx>\n')
       return Promise.reject('user aborted')
     })
     .then(_ => !nearExpiry(order) ? tx : Promise.reject('ShapeShift order expired, aborting transaction. be quicker next time!'))
@@ -124,6 +124,6 @@ const printSuccess = (order, txid) => {
   console.log('  Transaction status:', C.cyan.underline(txUrl(txid)))
   args.noproxy || console.log('  ' + C.red('(warn)'), C.gray('don\'t forget your proxy when opening links in browser!'))
   console.log('\n  '+C.yellowBright(order.withdrawalAmount, 'BTC'), 'are coming your way (after 3 bcash confirmations).', C.bold('HODL strong!'))
-  console.log('\nFound this tool useful? Tips are appreciated.\n  '+C.yellowBright('1HNDUy34hrqoTEChCZZjb6vWAU9APAKG78')+'\n')
+  console.log('\nFound this tool useful? Tips are appreciated.\n\n    '+C.yellowBright('1HNDUy34hrqoTEChCZZjb6vWAU9APAKG78')+'\n')
 }
 const txUrl = txid => 'http://blockdozer.com/insight/tx/' + txid

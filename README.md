@@ -25,11 +25,9 @@ Make sure to read *all* the instructions *carefully* before doing anything.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. USE AT YOUR OWK RISK.
 
-## Screenshot
-
-![Screenshot](https://raw.githubusercontent.com/shesek/bcash-instadump/master/screenshot.png?1)
-
 ## Install
+
+*Requires nodejs 7.6.0 or newer.*
 
 The quick, unsafe way:
 
@@ -39,7 +37,10 @@ The safer way: find a Git commit reference published by a third-party security a
 
     $ npm install -g git://github.com/shesek/bcash-instadump#[GIT-COMMIT-SHA256-HERE]
 
-Requires nodejs 7.6.0 or newer.
+There are currently no security audits that I'm aware of,
+but the code is < 450 SLOC if you want to review it yourself.
+If you do, you should publicly announce the hash for the Git commit you reviewed
+(and [tell me](https://github.com/shesek/bcash-instadump/issues/new)!).
 
 ## CLI tools
 
@@ -82,9 +83,15 @@ Use at your own risk.
 
 ----
 
+Screenshot of `bcash-instadump` in action:
+
+![Screenshot](https://raw.githubusercontent.com/shesek/bcash-instadump/master/screenshot.png?1)
+
+----
+
 ### `bcash-tx`- make bcash-compatible transactions
 
-    $ bcash-tx --input txid:vout:amount:key --output 1BcashAddr:ALL --feerate 250 --broadcast --tor
+    $ bcash-tx --input txid:vout:amount:key --output 1BcashAddr:ALL --feerate 250
 
 Create and sign a bcash-compatible transaction with the provided inputs and outputs.
 The transaction will be invalid on the Bitcoin network.
@@ -149,7 +156,7 @@ See `bcash-broadcast --help` for the full list of options.
 
     (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy Considerations*" below)
 
-### Extracting your UTXOs
+### Extracting unspent outputs and keys
 
 **From Bitcoin Core:**
 
