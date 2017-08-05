@@ -91,7 +91,7 @@ const makeVerifyTx = order => {
             , '('+C.yellowBright(formatDate(order.expiration))+')')
 
   console.log('\nTransaction', C.yellowBright(tx.txid())+':\n')
-  console.log('  Inputs:', C.yellowBright(formatSat(tx.getInputValue()), 'BCH'), 'from', C.yellowBright(tx.inputs.length), 'coins')
+  console.log('  Inputs:', C.yellowBright(formatSat(tx.getInputValue()), 'BCH'), 'from', C.yellowBright(tx.inputs.length), 'prevouts')
   console.log('  Output:', C.yellowBright(formatSat(tx.getOutputValue()), 'BCH'), 'to ShapeShift\'s address')
   console.log('  Miner fee:', C.yellowBright(formatSat(tx.getFee()), 'BCH')+',', 'rate:', C.yellowBright(tx.getRate(tx.view)/1000|0), 'satoshis/byte')
   if (tx.inputs.length > 1) console.log(' ', C.red('(warn)'), C.gray('merging multiple inputs together could harm your privacy. See README.md for more details.'))
@@ -125,4 +125,4 @@ const printSuccess = (order, txid) => {
   console.log('\n  '+C.yellowBright(order.withdrawalAmount, 'BTC'), 'are coming your way (after 3 bcash confirmations).', C.bold('HODL strong!'))
   console.log('\nFound this tool useful? Tips are appreciated.\n\n    '+C.yellowBright('1HNDUy34hrqoTEChCZZjb6vWAU9APAKG78')+'\n')
 }
-const txUrl = txid => 'http://blockdozer.com/insight/tx/' + txid
+const txUrl = txid => 'https://blockchair.com/bitcoin-cash/transaction/' + txid
