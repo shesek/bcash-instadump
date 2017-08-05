@@ -229,10 +229,7 @@ Preferably, use a proxy with a different public IP address for each request
 Transactions are broadcast to the bcash network using the Electrum bcash servers,
 giving them the ability to link your transactions/addresses/outputs to each-other and to your IP address.
 
-It is recommended that you use `--proxy` or `--tor` to connect over a proxy.
-Preferably, use a proxy with a different public IP address for each request
-(otherwise the transactions would not be linked to your real IP address, but still linked to each-other).
-
+Using a proxy would help here too (with the same caveat regarding different public IP addresses).
 Alternatively, you can get the raw transaction and broadcast it manually.
 Ideally, over a bcash full node under your full control, connected over Tor.
 
