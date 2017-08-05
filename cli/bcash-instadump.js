@@ -41,8 +41,8 @@ const args = require('commander')
 
   .parse(process.argv)
 
-if (!(args.input.length && args.payout)) args.help()
 initArgs(args)
+if (!(args.input.length && args.payout)) args.help()
 
 const shapeshift = ShapeShift({ proxy: args.proxy, noreferral: args.noreferral })
     , txTmp      = makeTx(args.input, [ dummyOut ], args.feerate) // @XXX builds and discards a dummy tx to estimate size/fee/amounts, somewhat wasteful

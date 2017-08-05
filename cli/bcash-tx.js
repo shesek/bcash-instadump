@@ -34,8 +34,8 @@ const args = require('commander')
 
   .parse(process.argv)
 
-if (!(args.input.length && args.output.length)) args.help()
 initArgs(args, !!args.broadcast)
+if (!(args.input.length && args.output.length)) args.help()
 
 const tx = makeTx(args.input, args.output, args.feerate)
 
