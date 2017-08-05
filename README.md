@@ -24,6 +24,10 @@ Make sure to read *all* the instructions *carefully* before doing anything.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. USE AT YOUR OWK RISK.
 
+## Screenshot
+
+![Screenshot](https://raw.githubusercontent.com/shesek/bcash-instadump/master/screenshot.png?1)
+
 ## Install
 
 The quick, unsafe way:
