@@ -14,13 +14,10 @@
     "bcoin": "1.0.0-beta.14",
     "chalk": "2.0.1",
     "commander": "2.11.0",
-    "iferr": "0.1.5",
     "inquirer": "3.2.1",
-    "shell-escape": "0.2.0",
     "socks": "1.1.10",
     "superagent": "3.5.2",
-    "superagent-proxy": "1.0.2",
-    "uniq": "1.0.1"
+    "superagent-proxy": "1.0.2"
   },
   "engines": {
     "node": ">=7.6.0"

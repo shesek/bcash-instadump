@@ -3,8 +3,6 @@ const
   C          = require('chalk')
 , util       = require('util')
 , inquirer   = require('inquirer')
-, shellEsc   = require('shell-escape')
-
 , Electrum   = require('../lib/electrum')
 , ShapeShift = require('../lib/shapeshift')
 , makeTx     = require('../lib/make-tx')
