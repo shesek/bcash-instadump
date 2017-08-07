@@ -2,14 +2,16 @@
 
 const
   Electrum = require('../lib/electrum')
+, toAddr   = require('../lib/addr-or-key')
 , C        = require('chalk')
 
 , { formatSat, initArgs, printErr, info } = require('./common')
 
 const args = require('commander')
   .version(require('../package.json').version)
-  .description('List unspent outputs for the provided address(es).')
-  .usage('[options] <address ...>')
+  .description('List unspent outputs for the provided address(es) or key(s)'
+             + '\n  in CSV format: txid,vout,amount,addressOrKey')
+  .usage('[options] <addressOrKey ...>')
 
   .option('-e, --electrum <server>', 'electrum server, must be bcash-compatible [default: random server]')
   .option('-p, --proxy <proxy>', 'set proxy for broadcasting transactions')
@@ -17,6 +19,7 @@ const args = require('commander')
   .option('-N, --noproxy', 'set if you\'re sure you don\'t want to use a proxy')
 
   .on('--help', _ => console.log('\n  Example:\n\n    $ bcash-utxo --tor 1myFirstAddr 1myOtherAddr ...'
+                                             + '\n    $ bcash-utxo --tor LmyFirstKey KmyOtherKey ...'
                                + '\n\n  README:', C.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
 
   .parse(process.argv)
@@ -24,12 +27,12 @@ const args = require('commander')
 if (!args.args.length) args.help()
 initArgs(args)
 
-args.args.forEach(address =>
-  Electrum(args.electrum, args.proxy).listunspent(address)
+args.args.forEach(addrOrKey =>
+  Electrum(args.electrum, args.proxy).listunspent(toAddr(addrOrKey))
     .then(outs => {
-      info('loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(address))
+      info('loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(addrOrKey))
       console.log(outs.map(out =>
-        [ out.tx_hash, out.tx_pos, formatSat(out.value), address ].join(',')).join('\n'))
+        [ out.tx_hash, out.tx_pos, formatSat(out.value), addrOrKey ].join(',')).join('\n'))
     })
     .catch(printErr)
 )

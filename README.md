@@ -122,6 +122,10 @@ See `bcash-tx --help` for the full list of options.
 Get the unspent bcash outputs for the provided address(es) from the Electrum bcash servers,
 and print them as CSV (`txid,vout,amount,address` format).
 
+You may also provide keys instead of addresses.
+In this case, the CSV format would be `txid,vout,amount,key`
+(same as the format expected by `bcash-instadump` and `bcash-tx`).
+
 This will leak information to the Electrum bcash servers (see "*Privacy considerations*" below).
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx`.
