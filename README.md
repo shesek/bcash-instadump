@@ -38,7 +38,7 @@ The safer way: find a Git commit reference published by a third-party security a
     $ npm install -g git://github.com/shesek/bcash-instadump#[GIT-COMMIT-SHA256-HERE]
 
 There are currently no security audits that I'm aware of,
-but the code is < 450 SLOC if you want to review it yourself.
+but the code is < 500 SLOC if you want to review it yourself.
 If you do, you should publicly announce the hash for the Git commit you reviewed
 (and [tell me](https://github.com/shesek/bcash-instadump/issues/new)!).
 

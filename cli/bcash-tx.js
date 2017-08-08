@@ -37,7 +37,7 @@ const args = require('commander')
 initArgs(args, !!args.broadcast)
 if (!(args.input.length && args.output.length)) args.help()
 
-const tx = makeTx(args.input, args.output, args.feerate)
+const tx = makeTx(args.input, args.output, { feerate: args.feerate })
 
 if (!args.crazyfee) checkFee(tx)
 
