@@ -272,6 +272,9 @@ Pull requests are welcome! Some interesting next steps are:
 
 - Multi-signature support (currently only `p2pkh` scripts are supported)
 
+- Connect to the Tor control port to change circuits (`NEWNYM` signal) between
+  address lookups in `bcash-utxo`.
+
 - Tests (there aren't any! :scream::scream:)
 
 - Have any other cool ideas? [Let me know!](https://github.com/shesek/bcash-instadump/issues/new)
