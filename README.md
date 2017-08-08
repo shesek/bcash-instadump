@@ -79,7 +79,6 @@ The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-t
 See `bcash-instadump --help` for the full list of options.
 
 **The author of this tool is not affiliated with ShapeShift.**
-Use at your own risk.
 
 ----
 
@@ -164,7 +163,7 @@ See `bcash-broadcast --help` for the full list of options.
 
 ### Extracting unspent outputs and keys
 
-**From Bitcoin Core:**
+#### From Bitcoin Core:
 
 ```bash
 $ bitcoin-cli listunspent | jq -c '.[] | [.txid,.vout,.amount,.address]' | tr -d '[]"' \
@@ -172,7 +171,7 @@ $ bitcoin-cli listunspent | jq -c '.[] | [.txid,.vout,.amount,.address]' | tr -d
    > utxos.csv
 ```
 
-**From Electrum:**
+#### From Electrum:
 
 ```bash
 $ electrum listunspent | jq -c '.[] | [.prevout_hash,.prevout_n,.value,.address]' | tr -d '[]"' \
@@ -182,16 +181,17 @@ $ electrum listunspent | jq -c '.[] | [.prevout_hash,.prevout_n,.value,.address]
 # @TODO assumes p2pkh outputs, will break with multisig
 ```
 
-**From a list of keys:**
+#### From a list of keys:
 
 Prepare `keys.txt` with a list of base58 WIF keys (one per line), then:
 
 ```bash
-$ bcash-utxo --tor -f keys.txt > utxo.csv
-
-# Warning: this will leak information to the Electrum bcash servers,
-# see "Privacy considerations" below.
+$ bcash-utxo --tor -f keys.txt > utxos.csv
 ```
+
+WARNING: looking up the unspent outputs associated with your addresses
+will leak information to the Electrum bcash servers.
+See "Privacy considerations" below for suggestions to improve privacy.
 
 ### Signing offline
 
@@ -207,8 +207,8 @@ satoshi@hot:~$ npm install
 satoshi@hot:~$ browserify --bare cli/bcash-tx.tx > /media/usb/bcash-tx.js
 
 # Offline machine - sign bcash transaction
-satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxo.csv --output 1myBcashAddr:ALL --inspect
-satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxo.csv --output 1myBcashAddr:ALL > /media/usb/signed.tx
+satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxos.csv --output 1myBcashAddr:ALL --inspect
+satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxos.csv --output 1myBcashAddr:ALL > /media/usb/signed.tx
 
 # Online machine - broadcast to the bcash network
 satoshi@hot:~$ bcash-broadcast --tor `cat /media/usb/signed.tx`
@@ -216,7 +216,7 @@ satoshi@hot:~$ bcash-broadcast --tor `cat /media/usb/signed.tx`
 
 ### Privacy considerations
 
-**Leaking data to the public blockchain**
+#### Leaking data to the public blockchain
 
 Merging your unspent outputs together (in a single multi-input transaction)
 will reveal the link between them (and their associated addresses)
@@ -227,38 +227,56 @@ once for each unspent output being sold (creating a separate 1-in,1-out tx each 
 and with a different `--payout` address. Ideally, this should also be spread out over time.
 This could be accomplished using a bash script along the lines of:
 
-    $ cat utxos.csv | xargs -L 1 bash -c 'sleep $[ ( $RANDOM % 3600 ) ]s &&
-        bcash-instadump --input $0 --payout `bitcoin-cli getnewaddress` --whateverjustdump'
+```bash
+$ cat utxos.csv | xargs -L 1 bash -c 'sleep $[ ( $RANDOM % 3600 ) ]s &&
+    bcash-instadump --input $0 --payout `bitcoin-cli getnewaddress` --whateverjustdump'
+```
 
-**Leaking data to ShapeShift**
+#### Leaking data to ShapeShift
 
 Selling all of your unspent outputs from the same IP address
 will reveal the link between your outputs (and their associated addresses) to ShapeShift
 and to anyone gaining access to their systems (via hacking, a legal warrant, or otherwise).
 
-It is recommended that you use `--proxy` or `--tor` to connect over a proxy.
+It is recommended to sell one output at a time and use `--proxy` or `--tor` to connect over a proxy.
 Preferably, use a proxy with a different public IP address for each request
 (otherwise the transactions would not be linked to your real IP address, but still linked to each-other).
 
-**Leaking data to the Electrum bcash servers *when broadcasting transactions***
+#### Leaking data to the Electrum bcash servers
 
-Transactions are broadcast to the bcash network using the Electrum bcash servers,
-giving them the ability to link your transactions/addresses/outputs to each-other and to your IP address.
+The Electrum bcash servers are used for two purposes:
+*(1)* Broadcasting raw transactions to the bcash network (for `bcash-instadump` and `bcash-tx --broadcast`),
+and *(2)* Fetching the unspent bcash outputs associated with your addresses (for `bcash-utxo`).
 
-Using a proxy would help here too (with the same caveat regarding different public IP addresses).
-Alternatively, you can get the raw transaction and broadcast it manually.
-Ideally, over a bcash full node under your full control, connected over Tor.
+This gives the Electrum servers the ability to link your transactions/addresses/outputs
+to each-other and to your IP address.
 
-**Leaking data to the Electrum bcash servers *when listing unspent outputs***
+To completely mitigate this leakage, you should ideally broadcast transactions and
+fetch unspent outputs using a bcash full node under your full control, connected over Tor.
 
-`bcash-utxo` uses Electrum servers to fetch the list of utxos,
-giving them the ability to link your addresses to each-other and to your IP address.
+However, if running a full node is not possible or desirable,
+you can also retain better privacy by using a proxy -
+with the same caveat mentioned above regarding different public IP addresses.
+To switch public IP addresses between address lookups,
+you can use Tor, the [tor-newnym](https://raw.githubusercontent.com/shesek/bcash-instadump/master/utility/tor-newnym.sh)
+script available in `utility/`, and something like:
 
-Using a proxy would help here too (with the same caveat regarding different public IP addresses),
-but ideally you should get this information from your own full node.
+```bash
+$ cat addresses-or-keys.txt | xargs -L 1 bash -c '
+     ./tor-newnym.sh <control-port> <password> && sleep $[ ( $RANDOM % 180) ]s &&
+     bcash-utxo --tor $0' \
+  > utxos.csv
+```
 
-Note that `bcash-utxo` is the only tool that fetches unspent outputs,
-the other tools get them directly and don't attempt to fetch them on their own.
+Under the default Tor configuration, the control port is 9151 and authentication is done using the cookie file.
+This should work: ```./tor-newnym.sh 9151 "`cat /path/to/tor/control_auth_cookie`"```.
+See the [Tor manual](https://www.torproject.org/docs/tor-manual.html.en#ControlPort) for
+more information about control port configuration and authentication.
+
+(`tor-newnym` will hopefully soon be integrated into the tool itself. PRs welcome!)
+
+In addition, it is also recommended that you use a random Electrum bcash server for each lookup.
+This is the default behaviour if you don't provide a specific server via `--electrum`.
 
 ## Contributing
 
