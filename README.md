@@ -228,7 +228,7 @@ and with a different `--payout` address. Ideally, this should also be spread out
 This could be accomplished using a bash script along the lines of:
 
     $ cat utxos.csv | xargs -L 1 bash -c 'sleep $[ ( $RANDOM % 3600 ) ]s &&
-        bcash-instadump --input $1 --payout `bitcoin-cli getnewaddress` --whateverjustdump'
+        bcash-instadump --input $0 --payout `bitcoin-cli getnewaddress` --whateverjustdump'
 
 **Leaking data to ShapeShift**
 
