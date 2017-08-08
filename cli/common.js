@@ -13,11 +13,11 @@ const
 , parseInput  = s => ((p=s.split(/[:,\s]/)) => ({ hash: revHex(p[0]), index: +p[1], value: toSat(p[2]), key: p[3] }))()
 , parseOutput = s => ((p=s.split(/[:,\s]/)) => ({ address: p[0], value: p[1] === 'ALL' ? p[1] : toSat(p[1]) }))()
 
-, getLines = path => readFileSync(path).toString().split('\n').map(s => s.replace(/^\s+|\s+$/g, '')).filter(s => s.length)
+, readLines = path => readFileSync(path).toString().split('\n').map(s => s.replace(/^\s+|\s+$/g, '')).filter(s => s.length)
 
 , initArgs = (args, expectProxy=true) => {
-  if (args.inputs)   args.input   = (args.input||[]).concat(getLines(args.inputs).map(parseInput))
   if (args.tor)      args.proxy   = 'socks5h://127.0.0.1:9150'
+  if (args.inputs)   args.input   = (args.input||[]).concat(readLines(args.inputs).map(parseInput))
   if (!args.feerate) args.feerate = (Math.random()*100|0)+150 // 150 to 250
 
   if (expectProxy && !args.proxy && !args.noproxy) {
@@ -39,4 +39,4 @@ const
 
 , info = (...text) => console.error(C.yellow('(info)'), ...text)
 
-module.exports = { formatSat, toSat, parseInput, parseOutput, collector, initArgs, checkFee, printErr, info }
+module.exports = { formatSat, toSat, parseInput, parseOutput, collector, readLines, initArgs, checkFee, printErr, info }

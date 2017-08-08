@@ -5,13 +5,15 @@ const
 , toAddr   = require('../lib/addr-or-key')
 , C        = require('chalk')
 
-, { formatSat, initArgs, printErr, info } = require('./common')
+, { readLines, formatSat, initArgs, printErr, info } = require('./common')
 
 const args = require('commander')
   .version(require('../package.json').version)
   .description('List unspent outputs for the provided address(es) or key(s)'
              + '\n  in CSV format: txid,vout,amount,addressOrKey')
   .usage('[options] <addressOrKey ...>')
+
+  .option('-f, --file <file>', 'read addressOrKey from <file> instead of command-line arguments (one per line)')
 
   .option('-e, --electrum <server>', 'electrum server, must be bcash-compatible [default: random server]')
   .option('-p, --proxy <proxy>', 'set proxy for broadcasting transactions')
@@ -20,14 +22,16 @@ const args = require('commander')
 
   .on('--help', _ => console.log('\n  Example:\n\n    $ bcash-utxo --tor 1myFirstAddr 1myOtherAddr ...'
                                              + '\n    $ bcash-utxo --tor LmyFirstKey KmyOtherKey ...'
+                                             + '\n    $ bcash-utxo --tor -f fileWithAddressesOrKeys.txt'
                                + '\n\n  README:', C.underline('https://github.com/shesek/bcash-instadump'), '(really, do!)\n'))
 
   .parse(process.argv)
 
-if (!args.args.length) args.help()
 initArgs(args)
+const lookup = args.file ? readLines(args.file) : args.args
+if (!lookup.length) args.help()
 
-args.args.forEach(addrOrKey =>
+lookup.forEach(addrOrKey =>
   Electrum(args.electrum, args.proxy).listunspent(toAddr(addrOrKey))
     .then(outs => {
       info('loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(addrOrKey))

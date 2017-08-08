@@ -126,6 +126,8 @@ You may also provide keys instead of addresses.
 In this case, the CSV format would be `txid,vout,amount,key`
 (same as the format expected by `bcash-instadump` and `bcash-tx`).
 
+Specify `--file <file>` to read the list of addresses/keys from `<file>` (one per line) instead of from arguments.
+
 This will leak information to the Electrum bcash servers (see "*Privacy considerations*" below).
 
 The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-tx`.
@@ -168,7 +170,6 @@ See `bcash-broadcast --help` for the full list of options.
 $ bitcoin-cli listunspent | jq -c '.[] | [.txid,.vout,.amount,.address]' | tr -d '[]"' \
    | awk -F, '{"bitcoin-cli dumpprivkey "$4 | getline key; print $1 FS $2 FS $3 FS key }' \
    > utxos.csv
-
 ```
 
 **From Electrum:**
@@ -179,6 +180,17 @@ $ electrum listunspent | jq -c '.[] | [.prevout_hash,.prevout_n,.value,.address]
    > utxos.csv
 
 # @TODO assumes p2pkh outputs, will break with multisig
+```
+
+**From a list of keys:**
+
+Prepare `keys.txt` with a list of base58 WIF keys (one per line), then:
+
+```bash
+$ bcash-utxo --tor -f keys.txt > utxo.csv
+
+# Warning: this will leak information to the Electrum bcash servers,
+# see "Privacy considerations" below.
 ```
 
 ### Signing offline
