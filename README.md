@@ -264,8 +264,7 @@ the other tools get them directly and don't attempt to fetch them on their own.
 
 Pull requests are welcome! Some interesting next steps are:
 
-- A tool to prepare the list of unspent outputs based on a list of private keys
-  or the HD master seed.
+- A tool to prepare the list of unspent outputs based on the HD master seed.
 
 - Creating a GUI frontend (packaged as a browser extension, an [Electron](https://electron.atom.io/) app, or something else?)
 
