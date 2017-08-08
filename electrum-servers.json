@@ -1,8 +1,8 @@
 [
-  "tls://electroncash.cascharia.com:50002?acceptanycert=1"
-, "tls://electrum-abc.criptolayer.net:50012?acceptanycert=1"
-, "tls://bcc.arihanc.com:52002?acceptanycert=1"
-, "tls://35.185.209.69:50002?acceptanycert=1"
-, "tls://35.197.25.235:50002?acceptanycert=1"
-, "tls://35.158.236.146:50002?acceptanycert=1"
+  "tls://electroncash.cascharia.com:50002?anycert=1"
+, "tls://electrum-abc.criptolayer.net:50012?anycert=1"
+, "tls://bcc.arihanc.com:52002?anycert=1"
+, "tls://35.185.209.69:50002?anycert=1"
+, "tls://35.197.25.235:50002?anycert=1"
+, "tls://35.158.236.146:50002?anycert=1"
 ]
