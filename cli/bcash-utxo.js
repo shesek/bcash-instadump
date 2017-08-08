@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 const
-  Electrum = require('../lib/electrum')
-, toAddr   = require('../lib/addr-or-key')
-, C        = require('chalk')
+  C        = require('chalk')
+, listUtxo = require('../lib/list-utxo')
 
 , { readLines, formatSat, initArgs, printErr, info } = require('./common')
 
@@ -32,7 +31,7 @@ const lookup = args.file ? readLines(args.file) : args.args
 if (!lookup.length) args.help()
 
 lookup.forEach(addrOrKey =>
-  Electrum(args.electrum, args.proxy).listunspent(toAddr(addrOrKey))
+  listUtxo(addrOrKey, args)
     .then(outs => {
       info('loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(addrOrKey))
       console.log(outs.map(out =>
