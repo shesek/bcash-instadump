@@ -15,6 +15,9 @@ const
 
 , readLines = path => readFileSync(path).toString().split('\n').map(s => s.replace(/^\s+|\s+$/g, '')).filter(s => s.length)
 
+, info = (...text) => console.error(C.yellow('(info)'), ...text)
+, printErr = e => console.error(C.red('(error)'), e.message || e || '', e.response && (e.response.body && e.response.body.errors || e.response.text) || '')
+
 , initArgs = (args, expectProxy=true) => {
   if (args.tor)      args.proxy   = 'socks5h://127.0.0.1:9150'
   if (args.inputs)   args.input   = (args.input||[]).concat(readLines(args.inputs).map(parseInput))
@@ -24,6 +27,8 @@ const
     printErr('no proxy was specified. set ' + C.yellowBright('--noproxy') + ' if you\'re sure about that, '
            + 'or enable one with ' + C.yellowBright('--proxy') + '/' + C.yellowBright('--tor') + '.')
     process.exit()
+  } else if (expectProxy) {
+    info(args.noproxy ? 'not using a proxy' : 'using proxy: '+C.yellowBright(args.proxy))
   }
 }
 
@@ -33,10 +38,5 @@ const
       process.exit()
     }
   }
-
-, printErr = err =>
-    console.error(C.red('(error)'), err.message || err || '', err.response && (err.response.body && err.response.body.errors || err.response.text) || '')
-
-, info = (...text) => console.error(C.yellow('(info)'), ...text)
 
 module.exports = { formatSat, toSat, parseInput, parseOutput, collector, readLines, initArgs, checkFee, printErr, info }
