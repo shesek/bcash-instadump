@@ -35,8 +35,10 @@ const
 , checkFee = tx => {
     if (tx.getRate(tx.view)/1000 > MAXFEERATE) {
       printErr('woah there! are you sure you want to pay '+Amount.btc(tx.getFee())+' BCH in fees? enable ' + C.yellowBright('--crazyfee') + ' if you are.')
-      process.exit()
+      process.exit(1)
     }
   }
+
+process.on('uncaughtException', err => (printErr(err), process.exit(1)))
 
 module.exports = { formatSat, toSat, parseInput, parseOutput, collector, readLines, initArgs, checkFee, printErr, info }
