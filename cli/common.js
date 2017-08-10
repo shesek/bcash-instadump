@@ -7,10 +7,9 @@ const MAXFEERATE = 2000
 const
   formatSat = sat  => Amount.serialize(sat, 8)
 , toSat     = btcs => Amount.parse(btcs, 8)
-, revHex    = hex  => hex.match(/../g).reverse().join('')
 
 , collector   = map => (val, memo) => memo.concat([ map(val) ])
-, parseInput  = s => ((p=s.split(/[:,\s]/)) => ({ hash: revHex(p[0]), index: +p[1], value: toSat(p[2]), key: p[3] }))()
+, parseInput  = s => ((p=s.split(/[:,\s]/)) => ({ hash: p[0], index: +p[1], value: toSat(p[2]), key: p[3] }))()
 , parseOutput = s => ((p=s.split(/[:,\s]/)) => ({ address: p[0], value: p[1] === 'ALL' ? p[1] : toSat(p[1]) }))()
 
 , readLines = path => readFileSync(path).toString().split('\n').map(s => s.replace(/^\s+|\s+$/g, '')).filter(s => s.length)
