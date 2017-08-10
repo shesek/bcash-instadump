@@ -247,6 +247,18 @@ $ bcash-instadump --tor --input <txid>,0,4.995,LkeyForAddr1 --payout 1myBtcAddr1
 $ bcash-instadump --tor --input <txid>,1,4.995,LkeyForAddr2 --payout 1myBtcAddr2
 ```
 
+### Dump specific UTXOs
+
+`bcash-instadump --key <key>` will by default dump all of the
+unspent outputs available to `<key>`.
+To select specific ones, use:
+
+```bash
+$ bcash-utxo --tor LmyBcashKey > utxos.csv
+$ edit utxos.csv # leave just the ones you want to dump
+$ bcash-instadump --tor --inputs utxos.csv --payout 1btcAddr
+```
+
 ### Privacy considerations
 
 #### Leaking data to the public blockchain
