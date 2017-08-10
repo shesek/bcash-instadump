@@ -18,19 +18,19 @@ const
 , printErr = e => console.error(C.red('(error)'), e.message || e || '', e.response && (e.response.body && e.response.body.errors || e.response.text) || '')
 
 , initArgs = (args, expectProxy=true) => {
-  if (args.tor)      args.proxy   = 'socks5h://127.0.0.1:9150'
-  if (args.inputs)   args.input   = (args.input||[]).concat(readLines(args.inputs).map(parseInput))
-  if (args.keys)     args.key     = (args.key||[]).concat(readLines(args.keys))
-  if (!args.feerate) args.feerate = (Math.random()*50|0)+50 // 50 to 100
+    if (args.tor)      args.proxy   = 'socks5h://127.0.0.1:9150'
+    if (args.inputs)   args.input   = (args.input||[]).concat(readLines(args.inputs).map(parseInput))
+    if (args.keys)     args.key     = (args.key||[]).concat(readLines(args.keys))
+    if (!args.feerate) args.feerate = (Math.random()*50|0)+50 // 50 to 100
 
-  if (expectProxy && !args.proxy && !args.noproxy) {
-    printErr('no proxy was specified. set ' + C.yellowBright('--noproxy') + ' if you\'re sure about that, '
-           + 'or enable one with ' + C.yellowBright('--proxy') + '/' + C.yellowBright('--tor') + '.')
-    process.exit()
-  } else if (expectProxy) {
-    info(args.noproxy ? 'not using a proxy' : 'using proxy: '+C.yellowBright(args.proxy))
+    if (expectProxy && !args.proxy && !args.noproxy) {
+      printErr('no proxy was specified. set ' + C.yellowBright('--noproxy') + ' if you\'re sure about that, '
+             + 'or enable one with ' + C.yellowBright('--proxy') + '/' + C.yellowBright('--tor') + '.')
+      process.exit()
+    } else if (expectProxy) {
+      info(args.noproxy ? 'not using a proxy' : 'using proxy: '+C.yellowBright(args.proxy))
+    }
   }
-}
 
 , checkFee = tx => {
     if (tx.getRate(tx.view)/1000 > MAXFEERATE) {
