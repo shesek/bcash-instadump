@@ -26,7 +26,7 @@ const args = require('commander')
   .option('-K, --keys <file>', 'read keys from file (one per line)')
   .option('-P, --payout <address>', 'bitcoin address for receiving the converted bitcoins (required)')
   .option('-r, --refund <address>', 'bcash address for refunds if anything goes wrong with the exchange [default: the address of the first key]')
-  .option('-f, --feerate <rate>', 'set the feerate in satoshis/byte [default: rand(150,250)]', x => parseInt(x))
+  .option('-f, --feerate <rate>', 'set the feerate in satoshis/byte [default: rand(50,100)]', x => parseInt(x))
 
   .option('-e, --electrum <server>', 'electrum server, must be bcash-compatible [default: random server]')
   .option('-p, --proxy <proxy>', 'proxy for connecting to electrum server and shapeshift')

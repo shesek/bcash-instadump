@@ -66,7 +66,7 @@ You can set your bcash refund address with `--refund <address>`
 Defaults to the address associated with the first key provided.
 
 Specify `--feerate` to control the transaction fee (in `satoshis/byte`).
-Defaults to `rand(150,250)`.
+Defaults to `rand(50,100)`.
 
 Use `--whateverjustdump` to skip all confirmations (for exchange rates, miner fees, etc) and just dump.
 This is probably a terrible idea.

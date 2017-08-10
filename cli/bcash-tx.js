@@ -12,10 +12,10 @@ const args = require('commander')
   .version(require('../package.json').version)
   .description('Create and sign a bcash-compatible transaction with the provided inputs and outputs.\n  The transaction will be invalid on the Bitcoin network.')
 
-  .option('-i, --input <input>', 'add input in `txid:vout:amount:key` format (amount in whole bitcoins, key in base58)', collector(parseInput), [])
+  .option('-i, --input <input>', 'add input in txid:vout:amount:key) format (amount in whole bitcoins, key in base58)', collector(parseInput), [])
   .option('-I, --inputs <file>', 'read inputs from CSV file')
   .option('-o, --output <output>', 'add output in `address:amount` format (use ALL as the amount to send the maximum available amount minus tx fees)', collector(parseOutput), [])
-  .option('-f, --feerate <rate>', 'set the feerate in satoshis/byte [default: rand(150,250)]', x => parseInt(x))
+  .option('-f, --feerate <rate>', 'set the feerate in satoshis/byte [default: rand(50,100)]', x => parseInt(x))
 
   .option('-d, --inspect', 'print decoded transaction (instead of raw hex)')
   .option('-b, --broadcast', 'broadcast tx to the bcash network. you should --inspect first. recommended with --tor.')
