@@ -1,27 +1,33 @@
 # bcash-instadump
 
-**DUMP bcash 💩, HODL bitcoin 🚀🌔**
+**DUMP bcash 💩, HODL bitcoin 🚀🌔** *(no bcash wallet necessary!)*
 
 CLI tools for insta-dumping bcash in exchange for bitcoins (`bcash-instadump`),
 creating bcash-compatible transactions (`bcash-tx`),
 listing unspent bcash outputs (`bcash-utxo`)
 and broadcasting raw bcash transactions (`bcash-broadcast`).
 
-You can use these tools in a way that doesn't risk your bitcoins,
-by moving them out first. There are also instructions for signing offline.
-See "*Recommend Usage*" below.
+Developed by [Nadav Ivgi](https://www.bitrated.com/nadav) ([@shesek](https://twitter.com/shesek))
+of [Bitrated](https://www.bitrated.com/).
+*1HNDUy34hrqoTEChCZZjb6vWAU9APAKG78*
 
-Tips are welcome: *1HNDUy34hrqoTEChCZZjb6vWAU9APAKG78*
+**TL;DR**
 
-## Warning! here be dragons. :dragon: :dragon_face:
+    $ bcash-instadump --tor --key LmyBcashKey --payout 1BtcAddrGimmeRogersCoins
+    # confirm the details and press Y to get your bitcoins
 
-**This software could put your bitcoins, bcash and privacy at risk.**
+(yes, that's it! but do read the whole thing to fully understand the risks involved.)
+
+**Warning! This software could put your bitcoins, bcash and privacy at risk.**
 
 These tools are meant for technically advanced users.
 Using them incorrectly (or even correctly!) could result in loss of funds and privacy.
-If you don't consider yourself a technical expert, please seek advice from someone who is.
+If you don't consider yourself a technical person, please seek advice from someone who is.
 
 Make sure to read *all* the instructions *carefully* before doing anything.
+You can use these tools in a way that doesn't risk your bitcoins,
+by moving them out first. There are also instructions for signing offline.
+See "*Instructions*" below.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. USE AT YOUR OWK RISK.
 
@@ -46,23 +52,26 @@ If you do, you should publicly announce the hash for the Git commit you reviewed
 
 ### `bcash-instadump` - dump bcash on ShapeShift
 
-    $ bcash-instadump --tor --input txid,vout,amount,key --payout 1BtcAddrGimmeRogersCoins
+    $ bcash-instadump --key LmyBcashKey --payout 1BtcAddrGimmeRogersCoins
 
-Use [ShapeShift](https://shapeshift.io/) to insta-dump bcash from the unspent output specified in `--input`
-(`amount` in whole bitcoins, `key` in base58/WIF)
-and send the purchased BTC to the bitcoin address provided in `--payout`.
+Insta-dump the bcash held in the provided `--key` (in base58 WIF)
+and send the purchased BTC to the bitcoin address provided in `--payout`
+(via [ShapeShift](https://shapeshift.io/)).
+Shows details and asks for a confirmation before actually dumping.
 
-Transactions are signed using a [monkey-patched](https://github.com/shesek/bcash-instadump/blob/master/lib/patch-bcoin-bcash.js)
-version of [bcoin](http://bcoin.io/)
-and broadcasted to the bcash network using an
-[Electrum bcash server](https://github.com/shesek/bcash-instadump/blob/master/electrum-servers.json).
+Using `--key <key>` will load all of the unspent outputs belonging to `<key>`.
+To add specific inputs instead, you can use `--input txid,vout,amount,key`.
+Loading unspent outputs is done using the
+[Electrum bcash servers](https://github.com/shesek/bcash-instadump/blob/master/electrum-servers.json)
+(see "*Privacy considerations*" below).
 
-You can specify `--input` multiple times, or specify a CSV file instead with `--inputs utxos.csv`.
+You can specify both `--key` and `--input` multiple times,
+or specify a file with `--keys keys.txt` and `--inputs utxos.csv`.
 All the inputs will be joined together in a single transaction (see "*Privacy considerations*" below).
 Only `p2pkh` scripts are currently supported.
 
 You can set your bcash refund address with `--refund <address>`
-(used in case anything goes wrong with the exchange, should not normally come into use).
+(used by ShapeShift in case anything goes wrong with the exchange).
 Defaults to the address associated with the first key provided.
 
 Specify `--feerate` to control the transaction fee (in `satoshis/byte`).
@@ -79,6 +88,9 @@ The `--(no)proxy`, `--tor` and `--electrum` options are the same as for `bcash-t
 See `bcash-instadump --help` for the full list of options.
 
 **The author of this tool is not affiliated with ShapeShift.**
+There are reports of orders failing with ShapeShift
+despite the funds being sent. Reaching out to ShapeShift's
+customer support should usually resolve that.
 
 ----
 
@@ -149,17 +161,10 @@ See `bcash-broadcast --help` for the full list of options.
 
 ## Instructions & gotchas
 
-### Recommend Usage (protect your BTC!)
+### Protect your BTC!
 
-1. Prepare a CSV file with a list of your UTXOs (`txid,vout,amount,key` format. `amount` in whole bitcoins, `key` in base58/WIF).
-   See instructions for specific wallets below.
-
-2. **Move your bitcoins!** To avoid risking your BTC, keys with a BTC balance should never be exposed to this tool.
-   Make sure the keys provided to this software are *entirely emptied of BTC* and hold just the BCH tokens before doing anything with this tool.
-
-3. Profit! `$ bcash-instadump --inputs utxos.csv --payout 1BtcAddrGimmeRogersCoins`
-
-    (WARNING: will merge the all the outputs together in a single transaction, see "*Privacy considerations*" below)
+**Move your bitcoins first!** To avoid risking your BTC, keys with a BTC balance should never be exposed to this tool.
+Make sure the keys provided to this software are *entirely emptied of BTC* and hold BCH only.
 
 ### Extracting unspent outputs and keys
 
@@ -191,7 +196,13 @@ $ bcash-utxo --tor -f keys.txt > utxos.csv
 
 WARNING: looking up the unspent outputs associated with your addresses
 will leak information to the Electrum bcash servers.
-See "Privacy considerations" below for suggestions to improve privacy.
+See "*Privacy considerations*" below for suggestions to improve privacy.
+
+#### Dumping from the UTXO CSV file
+
+```bash
+$ bcash-instadump --tor --inputs utxos.csv --payout 1myBtcAddr
+```
 
 ### Signing offline
 
@@ -206,12 +217,34 @@ satoshi@hot:~$ git clone https://github.com/shesek/bcash-instadump#[COMMIT-SHA25
 satoshi@hot:~$ npm install
 satoshi@hot:~$ browserify --bare cli/bcash-tx.tx > /media/usb/bcash-tx.js
 
+# Online machine - prepare list of outputs
+satoshi@hot:~$ bcash-utxo --tor 1myFirstAddr 1myOtherAddr > /media/usb/utxos.csv
+# WARNING: will leak information to the Electrum bcash servers, see "Privacy considerations"
+
 # Offline machine - sign bcash transaction
+satoshi@cold:~$ edit utxos.csv # change 4th column from address to key
 satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxos.csv --output 1myBcashAddr:ALL --inspect
 satoshi@cold:~$ node /media/usb/bcash-tx.js --inputs utxos.csv --output 1myBcashAddr:ALL > /media/usb/signed.tx
 
 # Online machine - broadcast to the bcash network
 satoshi@hot:~$ bcash-broadcast --tor `cat /media/usb/signed.tx`
+```
+
+### Splitting coins
+
+If your coins are too big to be sold with one order (due to ShapeShift's limits),
+you can split them up with `bcash-tx` and make several orders.
+
+For example, to split a 10 BCH output into two 4.995 BCH outputs
+(leaving some for mining fees),
+you can do something like:
+
+```bash
+$ bcash-tx --tor --broadcast --key LmyBcashKeyWithLargeOutput \
+    --output 1myBcashAddr1:4.995 --output 1myBcashAddr2:4.995
+# take note of the resulting <txid>
+$ bcash-instadump --tor --input <txid>,0,4.995,LkeyForAddr1 --payout 1myBtcAddr1
+$ bcash-instadump --tor --input <txid>,1,4.995,LkeyForAddr2 --payout 1myBtcAddr2
 ```
 
 ### Privacy considerations
@@ -245,8 +278,10 @@ Preferably, use a proxy with a different public IP address for each request
 #### Leaking data to the Electrum bcash servers
 
 The Electrum bcash servers are used for two purposes:
-*(1)* Broadcasting raw transactions to the bcash network (for `bcash-instadump` and `bcash-tx --broadcast`),
-and *(2)* Fetching the unspent bcash outputs associated with your addresses (for `bcash-utxo`).
+*(1)* Broadcasting raw transactions to the bcash network
+(for `bcash-instadump` and `bcash-tx --broadcast`),
+and *(2)* Fetching the unspent bcash outputs associated with your addresses
+(for `bcash-utxo` and `bcash-instadump --key).
 
 This gives the Electrum servers the ability to link your transactions/addresses/outputs
 to each-other and to your IP address.
