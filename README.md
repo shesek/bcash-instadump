@@ -22,7 +22,7 @@ of [Bitrated](https://www.bitrated.com/).
 
 These tools are meant for technically advanced users.
 Using them incorrectly (or even correctly!) could result in loss of funds and privacy.
-If you don't consider yourself a technical person, please seek advice from someone who is.
+If you don't consider yourself a technical user, please seek advice from someone who is.
 
 Make sure to read *all* the instructions *carefully* before doing anything.
 You can use these tools in a way that doesn't risk your bitcoins,

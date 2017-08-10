@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 const
-  C        = require('chalk')
-, util     = require('util')
-, makeTx   = require('../lib/make-tx')
-, Electrum = require('../lib/electrum')
+  C          = require('chalk')
+, util       = require('util')
+, Electrum   = require('../lib/electrum')
+, makeTx     = require('../lib/make-tx')
+, {keysUtxo} = require('../lib/utxo')
 
 , { parseInput, parseOutput, collector, initArgs, checkFee, printErr } = require('./common')
 
@@ -34,8 +35,8 @@ const args = require('commander')
 
   .parse(process.argv)
 
-initArgs(args, !!args.broadcast)
-if (!(args.input.length && args.output.length)) args.help()
+initArgs(args, (args.broadcast || args.key.length || args.keys.length))
+if (!(args.input.length || args.key.length) || !args.output.length) args.help()
 
 const tx = makeTx(args.input, args.output, args.feerate)
 
