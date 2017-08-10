@@ -46,7 +46,7 @@ The safer way: find a Git commit reference published by a third-party security a
 There are currently no security audits that I'm aware of,
 but the code is < 500 SLOC if you want to review it yourself.
 If you do, you should publicly announce the hash for the Git commit you reviewed
-(and [tell me](https://github.com/shesek/bcash-instadump/issues/new)!).
+(and [tell me!](https://github.com/shesek/bcash-instadump/issues/new)).
 
 ## CLI tools
 
@@ -55,8 +55,8 @@ If you do, you should publicly announce the hash for the Git commit you reviewed
     $ bcash-instadump --key LmyBcashKey --payout 1BtcAddrGimmeRogersCoins
 
 Insta-dump the bcash held in the provided `--key` (in base58 WIF)
-and send the purchased BTC to the bitcoin address provided in `--payout`
-(via [ShapeShift](https://shapeshift.io/)).
+on [ShapeShift](https://shapeshift.io/)
+and send the purchased BTC to the bitcoin address provided in `--payout`.
 Shows details and asks for a confirmation before actually dumping.
 
 Using `--key <key>` will load all of the unspent outputs belonging to `<key>`.
@@ -161,7 +161,7 @@ See `bcash-broadcast --help` for the full list of options.
 
 ## Instructions & gotchas
 
-### Protect your BTC!
+### Protect your BTC
 
 **Move your bitcoins first!** To avoid risking your BTC, keys with a BTC balance should never be exposed to this tool.
 Make sure the keys provided to this software are *entirely emptied of BTC* and hold BCH only.
@@ -235,9 +235,9 @@ satoshi@hot:~$ bcash-broadcast --tor `cat /media/usb/signed.tx`
 If your coins are too big to be sold with one order (due to ShapeShift's limits),
 you can split them up with `bcash-tx` and make several orders.
 
-For example, to split a 10 BCH output into two 4.995 BCH outputs
+For example, to split a 10 BCH output into two 4.995 BCH orders
 (leaving some for mining fees),
-you can do something like:
+use something like:
 
 ```bash
 $ bcash-tx --tor --broadcast --key LmyBcashKeyWithLargeOutput \
@@ -273,7 +273,7 @@ and to anyone gaining access to their systems (via hacking, a legal warrant, or 
 
 It is recommended to sell one output at a time and use `--proxy` or `--tor` to connect over a proxy.
 Preferably, use a proxy with a different public IP address for each request
-(otherwise the transactions would not be linked to your real IP address, but still linked to each-other).
+(otherwise the transactions would not be linked to your real IP address, but still linked to each-other. see more on that below.)
 
 #### Leaking data to the Electrum bcash servers
 
