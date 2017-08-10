@@ -1,10 +1,17 @@
 {
   "name": "bcash-instadump",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "CLI tools for insta-dumping bcash in exchange for bitcoins (via ShapeShift), creating bcash-compatible transactions, and more.",
   "author": "Nadav Ivgi <nadav@bitrated.com>",
   "license": "GPL-3.0",
-  "keywords": [ "bitcoin", "bcash", "bch", "bcc", "dump", "shapeshift"],
+  "keywords": [
+    "bitcoin",
+    "bcash",
+    "bch",
+    "bcc",
+    "dump",
+    "shapeshift"
+  ],
   "repository": "https://github.com/shesek/bcash-instadump",
   "bin": {
     "bcash-instadump": "./cli/bcash-instadump.js",
