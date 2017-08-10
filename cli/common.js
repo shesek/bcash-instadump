@@ -20,6 +20,7 @@ const
 , initArgs = (args, expectProxy=true) => {
   if (args.tor)      args.proxy   = 'socks5h://127.0.0.1:9150'
   if (args.inputs)   args.input   = (args.input||[]).concat(readLines(args.inputs).map(parseInput))
+  if (args.keys)     args.key     = (args.key||[]).concat(readLines(args.keys))
   if (!args.feerate) args.feerate = (Math.random()*100|0)+150 // 150 to 250
 
   if (expectProxy && !args.proxy && !args.noproxy) {

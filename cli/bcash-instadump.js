@@ -6,6 +6,7 @@ const
 , Electrum   = require('../lib/electrum')
 , ShapeShift = require('../lib/shapeshift')
 , makeTx     = require('../lib/make-tx')
+, {keysUtxo} = require('../lib/utxo')
 
 , { collector, parseInput, toSat, formatSat, initArgs, checkFee, printErr, info } = require('./common')
 
@@ -21,6 +22,8 @@ const args = require('commander')
 
   .option('-i, --input <input>', 'add input in txid:vout:amount:key format (amount in whole bitcoins, key in base58)', collector(parseInput), [])
   .option('-I, --inputs <file>', 'read inputs from CSV file')
+  .option('-k, --key <key>', 'load unspent outputs for <key> and add them', collector(x => x), [])
+  .option('-K, --keys <file>', 'read keys from file (one per line)')
   .option('-P, --payout <address>', 'bitcoin address for receiving the converted bitcoins (required)')
   .option('-r, --refund <address>', 'bcash address for refunds if anything goes wrong with the exchange [default: the address of the first key]')
   .option('-f, --feerate <rate>', 'set the feerate in satoshis/byte [default: rand(150,250)]', x => parseInt(x))
@@ -40,58 +43,62 @@ const args = require('commander')
   .parse(process.argv)
 
 initArgs(args)
-if (!(args.input.length && args.payout)) args.help()
+if (!(args.input.length || args.key.length) || !args.payout) args.help()
 
-const shapeshift = ShapeShift({ proxy: args.proxy, noreferral: args.noreferral })
-    , txTmp      = makeTx(args.input, [ dummyOut ], { feerate: args.feerate }) // @XXX builds and discards a dummy tx to estimate size/fee/amounts, somewhat wasteful
-    , txVal      = formatSat(txTmp.getOutputValue())
-    , txFee      = txTmp.getFee() // don't re-calculate later based on feerate, as it might result in a different fee and txout amount (due to slightly different sizes)
-    , refund     = args.refund || txTmp.view.getCoin(txTmp.inputs[0]).getAddress().toString() // @XXX could be extracted directly from args, but we already have a tx here
+if (args.key.length) info('loading unspent outputs for', C.yellowBright(args.key.length), 'keys')
 
-info(args.noproxy ? 'not using a proxy' : 'using proxy: '+C.yellowBright(args.proxy))
-info('fetching market data from ShapeShift')
+keysUtxo(args.key, args).then(inputs => args.input.concat(inputs)).then(inputs => {
+  if (!inputs.length) return Promise.reject('no unspent outputs found for the provided key(s)')
 
-shapeshift.marketinfo(pair)
-  .then(market => (info(util.inspect(market, { colors: true }).replace(/\n /g,'')), market))
-  .then(market => verifyLimits(market, txVal))
-  .then(market => info('within limits', C.yellowBright(market.minimum, '<=', txVal, '<=', market.limit)))
+  const shift  = ShapeShift({ proxy: args.proxy, noreferral: args.noreferral })
+      , txTmp  = makeTx(inputs, [ dummyOut ], args.feerate) // @XXX builds and discards a dummy tx to estimate size/fee/amounts, somewhat wasteful
+      , txVal  = txTmp.getOutputValue()
+      , refund = args.refund || txTmp.view.getCoin(txTmp.inputs[0]).getAddress().toString()
 
-  .then(_      => info('creating order to dump', C.yellowBright(txVal, 'BCH')))
-  .then(_      => shapeshift.shift(pair, txVal, refund, args.payout))
-  .then(order  => makeVerifyTx(order)
-    .then(tx   => Electrum(args.electrum, args.proxy).broadcast(tx.toRaw().toString('hex')))
-    .then(txid => printSuccess(order, txid)))
+  info('fetching market info')
+  return shift.marketinfo(pair)
+    .then(market => (info('ShapeShift market info:', util.inspect(market, { colors: true }).replace(/\n /g,'')), market))
+    .then(market => verifyLimits(market, formatSat(txVal)))
 
-  .catch(printErr)
+    .then(_      => info('creating order to dump', C.yellowBright(formatSat(txVal), 'BCH')))
+    .then(_      => shift.openOrder(pair, formatSat(txVal), refund, args.payout))
+    .then(order  => makeVerifyTx(order, inputs, txVal)
+      .then(tx   => Electrum(args.electrum, args.proxy).broadcast(tx.toRaw().toString('hex')))
+      .then(txid => printSuccess(order, txid)))
+}).catch(printErr)
 
 const verifyLimits = (market, amount) =>
   !market.minimum || !market.limit         ? Promise.reject('missing market limits, probably a temporary ShapeShift issue. try again in a few minutes.')
 : toSat(amount) < toSat(''+market.minimum) ? Promise.reject('cannot sell '+amount+' BCH, minimum is '+market.minimum+' BCH')
 : toSat(amount) > toSat(''+market.limit)   ? Promise.reject('cannot sell '+amount+' BCH, maximum is '+market.limit+' BCH')
-: Promise.resolve(market)
+: info('within limits', C.yellowBright(market.minimum, '<=', amount, '<=', market.limit))
 
-const makeVerifyTx = order => {
-  const tx   = makeTx(args.input, [ { address: order.deposit, value: 'ALL' } ], { fee: txFee })
-      , btcs = order.withdrawalAmount
+const makeVerifyTx = (order, inputs, txVal) => {
+  const tx    = makeTx(inputs, [ { address: order.deposit, value: txVal } ])
+      , btcs  = order.withdrawalAmount
+      , rateE = (toSat(btcs)/tx.getOutputValue()).toFixed(8)
+      , rateF = (toSat(btcs)/tx.getInputValue()).toFixed(8)
 
   if (!args.crazyfee) checkFee(tx)
 
   console.log('\nShapeShift order', C.yellowBright(order.orderId)+':\n')
-  console.log('  '+C.red.bold('DUMP'), C.red(formatNum(txVal, true), 'BCH')+',', C.green.bold('GET'), C.green(formatNum(btcs, true), 'BTC'))
-  console.log('\n  Sending', C.yellowBright(formatNum(txVal, true), 'BCH'), 'to', C.yellowBright(order.deposit), C.yellow('(ShapeShift\'s bcash address)'))
-  console.log('  Getting', C.yellowBright(formatNum(btcs, true), 'BTC'), 'to', C.yellowBright(order.withdrawal), C.yellow('(your bitcoin payout address)'))
-  console.log('  Refund address (bcash):', C.yellowBright(order.returnAddress), (!args.refund ? C.yellow('(none provided, defaulted to the address of the first key)') : ''))
-  console.log('  Deducted miner fee:', C.yellowBright(order.minerFee, 'BTC'))
-  console.log('\n  Effective rate:', C.yellowBright('1 BCH'), '=', formatNum(btcs/txVal), 'BTC', C.yellow('(after deducted mining fees)'))
-  console.log('  Quoted rate:   ', C.yellowBright('1 BCH'), '=', formatNum(order.quotedRate), 'BTC', C.yellow('(before deducted mining fees)'))
+  console.log('  Payout address  (BTC):', C.yellowBright(order.withdrawal))
+  console.log('  Deposit address (BCH):', C.yellowBright(order.deposit))
+  console.log('  Refund address  (BCH):', C.yellowBright(order.returnAddress), C.yellow(!args.refund ? '(none provided, defaulted to the address of the first key)' : ''))
+  console.log('\n  Fixed fee:', C.yellowBright(order.minerFee, 'BTC'), C.yellow('(charged by ShapeShift)'))
+  console.log('\n  '+C.red(C.bold('DUMP'), formatSat(txVal), C.bold('BCH'))+',', C.green(C.bold('GET'), btcs, C.bold('BTC'))+'\n')
+  console.log('  Quoted rate: 1 BCH =', C.yellowBright(order.quotedRate), 'BTC', C.yellow('(before ShapeShift\'s fixed fee and mining fees)'))
+  console.log('  Actual rate: 1 BCH =', C.yellowBright(rateE), 'BTC', C.yellow('(including ShapeShift\'s fixed fee)'))
+  console.log('  Total  rate: 1 BCH =', C.yellowBright(rateF), 'BTC', C.yellow('(including your bcash miner fees, too)'))
   console.log('\n  ' + C.cyan.underline(order.url), args.noproxy ? '' : '\n  '+C.red('(warn)'), C.gray('don\'t forget your proxy when opening links in browser'))
   console.log('\n  ' + C.underline('order expires'), 'in', C.yellowBright(Math.ceil((order.expiration-Date.now())/60000)), 'minutes'
             , '('+C.yellowBright(formatDate(order.expiration))+')')
 
   console.log('\nTransaction', C.yellowBright(tx.txid())+':\n')
-  console.log('  Inputs:', C.yellowBright(formatSat(tx.getInputValue()), 'BCH'), 'from', C.yellowBright(tx.inputs.length), 'prevouts')
-  console.log('  Output:', C.yellowBright(formatSat(tx.getOutputValue()), 'BCH'), 'to ShapeShift\'s address')
-  console.log('  Miner fee:', C.yellowBright(formatSat(tx.getFee()), 'BCH')+',', 'rate:', C.yellowBright(tx.getRate(tx.view)/1000|0), 'satoshis/byte')
+  console.log('  Inputs:', C.yellowBright(formatSat(tx.getInputValue()), 'BCH'), 'from', C.yellowBright(tx.inputs.length+' outpoints')
+            , C.yellow('('+tx.inputs.map(inv => [inv.prevout.hash.substr(0, 7), inv.prevout.index].join(':')).join(', ')+')'))
+  console.log('  Output:', C.yellowBright(formatSat(tx.getOutputValue()), 'BCH'), 'to', C.yellowBright(tx.outputs[0].getAddress()), C.yellow('(ShapeShift\'s deposit address)'))
+  console.log('  Tx size:', C.yellowBright(tx.getVirtualSize()+'b')+',', 'fee:', C.yellowBright(formatSat(tx.getFee()), 'BCH'), '(rate:', C.yellowBright(tx.getRate(tx.view)/1000|0), 'satoshis/byte)')
   if (tx.inputs.length > 1) console.log(' ', C.red('(warn)'), C.gray('merging multiple inputs together could harm your privacy. See README.md for more details.'))
 
   console.log('\nPlease make sure everything checks out. Once confirmed, this cannot be undone.')
@@ -118,8 +125,9 @@ const nearExpiry = order => Date.now() > order.expiration - 60000 // safety marg
 const printSuccess = (order, txid) => {
   console.log('\n'+C.green.bold('(success)'), 'bcash dumped in tx', C.yellowBright(txid)+'\n')
   console.log('  Order status:', C.cyan.underline(order.url))
-  console.log('  Transaction:', C.cyan.underline(txUrl(txid)))
+  console.log('  Transaction: ', C.cyan.underline(txUrl(txid)))
   args.noproxy || console.log('  ' + C.red('(warn)'), C.gray('don\'t forget your proxy when opening links in browser'))
   console.log('\n  '+C.yellowBright(order.withdrawalAmount, 'BTC'), 'are coming your way (after 3 bcash confirmations).', C.bold('HODL strong!')+'\n')
+  console.log('Make sure to keep a copy of the order and transaction details for future reference.\n')
 }
 const txUrl = txid => 'https://blockchair.com/bitcoin-cash/transaction/' + txid
