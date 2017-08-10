@@ -34,8 +34,8 @@ lookup.forEach(addrOrKey =>
   loadUtxo(addrOrKey, args)
     .then(outs => {
       info('loaded', C.yellowBright(outs.length), 'utxos for', C.yellowBright(addrOrKey))
-      console.log(outs.map(out =>
-        [ out.tx_hash, out.tx_pos, formatSat(out.value), addrOrKey ].join(',')).join('\n'))
+      outs.length && console.log(outs.map(out =>
+        [ out.hash, out.vout, formatSat(out.value), addrOrKey ].join(',')).join('\n'))
     })
     .catch(printErr)
 )
