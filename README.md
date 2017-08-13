@@ -1,11 +1,11 @@
 # bcash-instadump
 
-**DUMP bcash 💩, HODL bitcoin 🚀🌔** *(no bcash wallet necessary!)*
-
 CLI tools for insta-dumping bcash in exchange for bitcoins (`bcash-instadump`),
 creating bcash-compatible transactions (`bcash-tx`),
 listing unspent bcash outputs (`bcash-utxo`)
 and broadcasting raw bcash transactions (`bcash-broadcast`).
+
+No bcash wallet or exchange account necessary.
 
 Developed by [Nadav Ivgi](https://www.bitrated.com/nadav) ([@shesek](https://twitter.com/shesek))
 of [Bitrated](https://www.bitrated.com/).
@@ -13,8 +13,8 @@ of [Bitrated](https://www.bitrated.com/).
 
 **TL;DR**
 
-    $ bcash-instadump --tor --key LmyBcashKeyWIF --payout 1BtcAddrGimmeRogersCoins
-    # confirm the details and press Y to get your bitcoins
+    $ bcash-instadump --tor --key LmyBcashKeyWIF --payout 1myBtcAddr
+    # confirm the details and press Y to sell your bcash and get your bitcoins
 
 (yes, that's it! but do read the whole thing to fully understand the risks involved.)
 
@@ -52,7 +52,7 @@ If you do, you should publicly announce the hash for the Git commit you reviewed
 
 ### `bcash-instadump` - dump bcash on ShapeShift
 
-    $ bcash-instadump --key LmyBcashKeyWIF --payout 1BtcAddrGimmeRogersCoins
+    $ bcash-instadump --key LmyBcashKeyWIF --payout 1myBtcAddr
 
 Insta-dump the bcash held in the provided `--key` (in base58 WIF)
 on [ShapeShift](https://shapeshift.io/)
