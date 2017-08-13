@@ -13,7 +13,7 @@ of [Bitrated](https://www.bitrated.com/).
 
 **TL;DR**
 
-    $ bcash-instadump --tor --key LmyBcashKey --payout 1BtcAddrGimmeRogersCoins
+    $ bcash-instadump --tor --key LmyBcashKeyWIF --payout 1BtcAddrGimmeRogersCoins
     # confirm the details and press Y to get your bitcoins
 
 (yes, that's it! but do read the whole thing to fully understand the risks involved.)
@@ -52,7 +52,7 @@ If you do, you should publicly announce the hash for the Git commit you reviewed
 
 ### `bcash-instadump` - dump bcash on ShapeShift
 
-    $ bcash-instadump --key LmyBcashKey --payout 1BtcAddrGimmeRogersCoins
+    $ bcash-instadump --key LmyBcashKeyWIF --payout 1BtcAddrGimmeRogersCoins
 
 Insta-dump the bcash held in the provided `--key` (in base58 WIF)
 on [ShapeShift](https://shapeshift.io/)
@@ -128,7 +128,7 @@ See `bcash-tx --help` for the full list of options.
 
 ### `bcash-utxo` - list unspent bcash outputs
 
-    $ bcash-utxo --tor 1myFirstAddr 1myOtherAddr ...
+    $ bcash-utxo 1myFirstAddr 1myOtherAddr ...
 
 Get the unspent bcash outputs for the provided address(es) from the Electrum bcash servers,
 and print them as CSV (`txid,vout,amount,address` format).
@@ -149,7 +149,7 @@ See `bcash-utxo --help` for the full list of options.
 
 ### `bcash-broadcast` - broadcast raw bcash transactions
 
-    $ bcash-broadcast --tor <rawtx>
+    $ bcash-broadcast <rawtx>
 
 Broadcasts the provided `rawtx` (in hex) to the bcash network via an Electrum bcash server.
 
@@ -191,7 +191,7 @@ $ electrum listunspent | jq -c '.[] | [.prevout_hash,.prevout_n,.value,.address]
 Prepare `keys.txt` with a list of base58 WIF keys (one per line), then:
 
 ```bash
-$ bcash-utxo --tor -f keys.txt > utxos.csv
+$ bcash-utxo -f keys.txt > utxos.csv
 ```
 
 WARNING: looking up the unspent outputs associated with your addresses
@@ -201,7 +201,7 @@ See "*Privacy considerations*" below for suggestions to improve privacy.
 #### Dumping from the UTXO CSV file
 
 ```bash
-$ bcash-instadump --tor --inputs utxos.csv --payout 1myBtcAddr
+$ bcash-instadump --inputs utxos.csv --payout 1myBtcAddr
 ```
 
 ### Signing offline
