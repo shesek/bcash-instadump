@@ -26,7 +26,7 @@ const
     if (expectProxy && !args.proxy && !args.noproxy) {
       printErr('no proxy was specified. set ' + C.yellowBright('--noproxy') + ' if you\'re sure about that, '
              + 'or enable one with ' + C.yellowBright('--proxy') + '/' + C.yellowBright('--tor') + '.')
-      process.exit()
+      process.exit(1)
     } else if (expectProxy) {
       info(args.noproxy ? 'not using a proxy' : 'using proxy: '+C.yellowBright(args.proxy))
     }
