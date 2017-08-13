@@ -33,7 +33,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. USE AT YOUR OWK 
 
 ## Install
 
-*Requires nodejs 7.6.0 or newer.*
+*Requires nodejs 6.0.0 or newer.*
 
 The quick, less safe way:
 
@@ -208,7 +208,7 @@ $ bcash-instadump --tor --inputs utxos.csv --payout 1myBtcAddr
 
 To sign offline, you can use [browserify](http://browserify.org/) to create a portable version
 of `bcash-tx` with all of its dependencies bundled in a single `.js` file,
-and run that from the offline machine (requires nodejs >=7.6.0).
+and run that from the offline machine (requires nodejs >=6.0.0).
 
 ```bash
 # Online machine - prepare portable bundle
