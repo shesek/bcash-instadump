@@ -215,7 +215,7 @@ and run that from the offline machine (requires nodejs >=6.0.0).
 satoshi@hot:~$ npm install -g browserify
 satoshi@hot:~$ git clone https://github.com/shesek/bcash-instadump#[COMMIT-SHA256] && cd bcash-instadump
 satoshi@hot:~$ npm install
-satoshi@hot:~$ browserify --bare cli/bcash-tx.tx > /media/usb/bcash-tx.js
+satoshi@hot:~$ browserify --bare cli/bcash-tx.js > /media/usb/bcash-tx.js
 
 # Online machine - prepare list of outputs
 satoshi@hot:~$ bcash-utxo --tor 1myFirstAddr 1myOtherAddr > /media/usb/utxos.csv
