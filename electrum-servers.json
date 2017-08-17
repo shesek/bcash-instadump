@@ -5,4 +5,5 @@
 , "tls://35.185.209.69:50002?anycert=1"
 , "tls://35.197.25.235:50002?anycert=1"
 , "tls://35.158.236.146:50002?anycert=1"
+, "tls://electron.coinucopia.io:50002?anycert=1"
 ]
