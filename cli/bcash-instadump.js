@@ -98,7 +98,7 @@ const makeVerifyTx = (order, inputs, txVal) => {
   console.log('  Inputs:', C.yellowBright(formatSat(tx.getInputValue()), 'BCH'), 'from', C.yellowBright(tx.inputs.length+' outpoints')
             , C.yellow('('+tx.inputs.map(inv => [inv.prevout.txid().substr(0, 7), inv.prevout.index].join(':')).join(', ')+')'))
   console.log('  Output:', C.yellowBright(formatSat(tx.getOutputValue()), 'BCH'), 'to', C.yellowBright(tx.outputs[0].getAddress()), C.yellow('(ShapeShift\'s deposit address)'))
-  console.log('  Tx size:', C.yellowBright(tx.getVirtualSize()+'b')+',', 'fee:', C.yellowBright(formatSat(tx.getFee()), 'BCH'), '(rate:', C.yellowBright(tx.getRate(tx.view)/1000|0), 'satoshis/byte)')
+  console.log('  Tx size:', C.yellowBright(tx.getVirtualSize()+'b')+',', 'fee:', C.yellowBright(formatSat(tx.getFee()), 'BCH'), '(rate:', C.yellowBright(Math.round(tx.getRate(tx.view)/1000,2)), 'satoshis/byte)')
   if (tx.inputs.length > 1) console.log(' ', C.red('(warn)'), C.gray('merging multiple inputs together could harm your privacy. See README.md for more details.'))
 
   console.log('\nPlease make sure everything checks out. Once confirmed, this cannot be undone.')
